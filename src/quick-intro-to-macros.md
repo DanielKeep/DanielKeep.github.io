@@ -1030,9 +1030,9 @@ macro_rules! recurrence {
                 }
             }
 
-            impl Iterator<u64> for Recurrence {
+            impl Iterator<$sty> for Recurrence {
                 #[inline]
-                fn next(&mut self) -> Option<u64> {
+                fn next(&mut self) -> Option<$sty> {
                     /* ... */
 #                     if self.pos < 2 {
 #                         let next_val = self.mem[self.pos];
@@ -1225,9 +1225,9 @@ macro_rules! recurrence {
                 }
             }
 
-            impl Iterator<u64> for Recurrence {
+            impl Iterator<$sty> for Recurrence {
                 #[inline]
-                fn next(&mut self) -> Option<u64> {
+                fn next(&mut self) -> Option<$sty> {
                     if self.pos < MEMORY {
                         let next_val = self.mem[self.pos];
                         self.pos += 1;
@@ -1292,9 +1292,9 @@ With that done, we can now substitute the last thing: the `recur` expression.
 #                     &self.slice[real_index]
 #                 }
 #             }
-#             impl Iterator<u64> for Recurrence {
+#             impl Iterator<$sty> for Recurrence {
 #                 #[inline]
-#                 fn next(&mut self) -> Option<u64> {
+#                 fn next(&mut self) -> Option<$sty> {
 #                     if self.pos < MEMORY {
 #                         let next_val = self.mem[self.pos];
 #                         self.pos += 1;

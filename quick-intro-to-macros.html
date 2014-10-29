@@ -1051,9 +1051,9 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2
                 }
             }
 
-            <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+            <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
                 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-                <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
+                <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> {
                     <span class='comment'>/* ... */</span>
                 }
             }
@@ -1182,9 +1182,9 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2
                 }
             }
 
-            <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+            <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
                 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-                <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
+                <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>MEMORY</span> {
                         <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='self'>self</span>.<span class='ident'>pos</span>];
                         <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='number'>1</span>;
