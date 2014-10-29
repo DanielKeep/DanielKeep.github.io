@@ -1474,7 +1474,7 @@ This macro simply takes an expression, then wraps it in a block with a variable 
 let four = using_a!(a / 10);</span>
 </pre>
 
-Now, let's expand the invocation.
+Now, let's expand the invocation.  This is done by copy & pasting the captures from the invocation into the matching rule's expansion (*i.e.* replace `$e` with `a / 10`), then replacing the invocation with the finished expansion... making sure to preserve the colours!
 
 <pre class="rust"><span class="sc-0">macro_rules! using_a {
     ($e:expr) => {</span><span class="sc-1">

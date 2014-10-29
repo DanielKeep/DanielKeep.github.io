@@ -1366,7 +1366,7 @@ recurrence.rs:68:15: 68:65 note: expansion site
 let four = using_a!(a / 10);</span>
 </pre>
 
-<p>Now, let&#39;s expand the invocation.</p>
+<p>Now, let&#39;s expand the invocation.  This is done by copy &amp; pasting the captures from the invocation into the matching rule&#39;s expansion (<em>i.e.</em> replace <code>$e</code> with <code>a / 10</code>), then replacing the invocation with the finished expansion... making sure to preserve the colours!</p>
 
 <pre class="rust"><span class="sc-0">macro_rules! using_a {
     ($e:expr) => {</span><span class="sc-1">
