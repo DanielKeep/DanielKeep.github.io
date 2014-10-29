@@ -24,7 +24,9 @@
 <li><a href="#indexing-and-shuffling">3 Indexing and Shuffling</a><ul>
 <li><a href="#substitution">3.1 Substitution</a><ul></ul></li>
 <li><a href="#being-hygienic">3.2 Being Hygienic</a><ul></ul></li></ul></li>
-<li><a href="#todo">4 TODO</a><ul></ul></li></ul></nav><style type="text/css">
+<li><a href="#the-nuclear-option">4 The Nuclear Option</a><ul></ul></li>
+<li><a href="#some-more-gotchas">5 Some More Gotchas</a><ul></ul></li>
+<li><a href="#distribution">6 Distribution</a><ul></ul></li></ul></nav><style type="text/css">
     /**
      * Copyright 2013 The Rust Project Developers. See the COPYRIGHT
      * file at the top-level directory of this distribution and at
@@ -201,9 +203,6 @@
         padding: 0;
         font-size: inherit;
         color: inherit;
-    }
-    .small-code code {
-        font-size: 60%;
     }
 
     a > code {
@@ -394,6 +393,37 @@
     }
 </style>
 
+<style type="text/css">
+    /* Customisations. */
+
+    .small-code code {
+        font-size: 60%;
+    }
+
+    table pre.rust {
+        margin: 0;
+        border: 0;
+    }
+
+    table.parse-table tbody > tr > td:nth-child(1) > code:nth-of-type(2) {
+        color: black;
+        margin-top: -0.7em;
+        margin-bottom: -0.6em;
+    }
+
+    table.parse-table tbody > tr > td:nth-child(1) > code {
+        display: block;
+    }
+
+    table.parse-table tbody > tr > td:nth-child(2) > code {
+        display: block;
+    }
+</style>
+
+<blockquote>
+<p><strong>Note</strong>: This article exists as an additional resource for learning about macros in Rust.  There is also the <a href="http://doc.rust-lang.org/guide-macros.html">official Rust Macros Guide</a>.</p>
+</blockquote>
+
 <p>I think I might be weird.  It seems like almost the first thing I do when encountering a new language is go hunting for metaprogramming facilities.  This is usually followed by working out how to abuse them to do hideous, evil things.</p>
 
 <p>I&#39;ve become quite enamoured with Rust lately, due in no small part to its interesting macro system.  On a whim the other night, I decided to see about duplicating the functionality of D&#39;s <code>std.range.recurrence</code> function in Rust.  I was rather chuffed with the result, and thought that it might serve as a nice little, non-trivial example of how to construct macros in Rust.</p>
@@ -474,9 +504,9 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 
 <p>It&#39;s worth noting that <code>inits</code>, as implied by the name, actually contains <em>all</em> the expressions that match in this position, not just the first or last.  What&#39;s more, it captures them <em>as a sequence</em> as opposed to, say, irreversibly pasting them all together.  Also note that you can do &quot;zero or more&quot; with a repetition by using <code>*</code> instead of <code>+</code>.</p>
 
-<p>As an exercise, let&#39;s take the proposed input and feed it through the rule, to see how it is processed.</p>
+<p>As an exercise, let&#39;s take the proposed input and feed it through the rule, to see how it is processed.  The &quot;Position&quot; column will show which part of the syntax pattern needs to be matched against next, denoted by a &quot;⌂&quot;.  Note that in some cases, there might be more than one possible &quot;next&quot; element to match against.  &quot;Input&quot; will contain all of the tokens that have <em>not</em> been consumed yet.  <code>inits</code> and <code>recur</code> will contain the contents of those bindings.</p>
 
-<table>
+<table class="parse-table">
     <thead>
         <tr>
             <th>Position</th>
@@ -487,85 +517,105 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
     </thead>
     <tbody class="small-code">
         <tr>
-            <td><code>▸a[n] = $($inits:expr),+ , ... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>⌂</code></td>
             <td><code>a[n] = 1, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a▸[n] = $($inits:expr),+ , ... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code> ⌂</code></td>
             <td><code>[n] = 1, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[▸n] = $($inits:expr),+ , ... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>  ⌂</code></td>
             <td><code>n] = 1, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n▸] = $($inits:expr),+ , ... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>   ⌂</code></td>
             <td><code>] = 1, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] ▸= $($inits:expr),+ , ... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>     ⌂</code></td>
             <td><code>= 1, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] = ▸$($inits:expr),+ , ... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>       ⌂</code></td>
             <td><code>1, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] = $(▸$inits:expr),+ , ... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>         ⌂</code></td>
             <td><code>1, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] = $($inits:expr)▸,+ , ... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>                     ⌂  ⌂</code></td>
             <td><code>, 1, ..., a[n-1] + a[n-2]</code></td>
             <td><code>1</code></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] = $(▸$inits:expr),+ , ... , $recur:expr</code></td>
+            <td colspan="4" style="font-size:.7em;"><em>Note</em>: there are two ⌂ here, because
+                a comma could mean <em>either</em> another element in the
+                repetition, <em>or</em> the comma <em>after</em> the
+                repetition.</td>
+        </tr>
+        <tr>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>         ⌂                ⌂</code></td>
             <td><code>1, ..., a[n-1] + a[n-2]</code></td>
             <td><code>1</code></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] = $($inits:expr)▸,+ , ... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>                     ⌂  ⌂</code></td>
             <td><code>, ..., a[n-1] + a[n-2]</code></td>
             <td><code>1</code>, <code>1</code></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] = $($inits:expr),+ , ▸... , $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>         ⌂                ⌂</code></td>
             <td><code>..., a[n-1] + a[n-2]</code></td>
             <td><code>1</code>, <code>1</code></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] = $($inits:expr),+ , ... ▸, $recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>                              ⌂</code></td>
             <td><code>, a[n-1] + a[n-2]</code></td>
             <td><code>1</code>, <code>1</code></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] = $($inits:expr),+ , ... , ▸$recur:expr</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>                                ⌂</code></td>
             <td><code>a[n-1] + a[n-2]</code></td>
             <td><code>1</code>, <code>1</code></td>
             <td></td>
         </tr>
         <tr>
-            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr▸</code></td>
+            <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
+                <code>                                           ⌂</code></td>
             <td></td>
             <td><code>1</code>, <code>1</code></td>
             <td><code>a[n-1] + a[n-2]</code></td>
@@ -582,9 +632,14 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
     }
 </pre>
 
-<p>This will be the actual iterator type.  <code>mem</code> will be the memo buffer to hold the last few values so the recurrence can be computed.  <code>pos</code> is to keep track of the value of <code>n</code>.  I&#39;ve chosen <code>u64</code> as a &quot;sufficiently large&quot; type for our purposes.</p>
+<p>This will be the actual iterator type.  <code>mem</code> will be the memo buffer to hold the last few values so the recurrence can be computed.  <code>pos</code> is to keep track of the value of <code>n</code>.</p>
+
+<blockquote>
+<p><strong>Aside</strong>: I&#39;ve chosen <code>u64</code> as a &quot;sufficiently large&quot; type for the elements of this sequence.  Don&#39;t worry about how this will work out for <em>other</em> sequences; we&#39;ll come to it.</p>
+</blockquote>
 <pre class='rust '>
     <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+        <span class='attribute'>#[<span class='ident'>inline</span>]</span>
         <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
             <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='number'>2</span> {
                 <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='self'>self</span>.<span class='ident'>pos</span>];
@@ -626,6 +681,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
     }
 
     <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+        <span class='attribute'>#[<span class='ident'>inline</span>]</span>
         <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
             <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='number'>2</span> {
                 <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='self'>self</span>.<span class='ident'>pos</span>];
@@ -649,6 +705,10 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 
 <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
 </pre>
+
+<blockquote>
+<p><strong>Aside</strong>: Yes, this <em>does</em> mean we&#39;re defining a different <code>Recurrence</code> struct and its implementation for each macro invocation.  Most of this will optimise away in the final binary, with some judicious use of <code>#[inline]</code> attributes.</p>
+</blockquote>
 
 <p>It&#39;s also useful to check your expansion as you&#39;re writing it.  If you see anything in the expansion that needs to vary with the invocation, but <em>isn&#39;t</em> in the actual macro syntax, you should work out where to introduce it.  In this case, we&#39;ve added <code>u64</code>, but that&#39;s not neccesarily what the user wants, nor is it in the macro syntax.  So let&#39;s fix that.</p>
 <pre class='rust '>
@@ -766,6 +826,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
         }
 
         <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+            <span class='attribute'>#[<span class='ident'>inline</span>]</span>
             <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='number'>2</span> {
                     <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='self'>self</span>.<span class='ident'>pos</span>];
@@ -844,6 +905,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
             }
 
             <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+                <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='number'>2</span> {
                         <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='self'>self</span>.<span class='ident'>pos</span>];
@@ -887,10 +949,10 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 
 <pre><code class="language-{text}">recurrence.rs:61:45: 61:48 error: local ambiguity: multiple parsing options: built-in NTs expr (&#39;inits&#39;) or 1 other options.
 recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2]];
-                                                      ^~~
+                                                             ^~~
 </code></pre>
 
-<p>Here, we&#39;ve run into a limitation of <code>macro_rules</code>.  The problem is that second comma.  When it sees it during expansion, <code>macro_rules</code> can&#39;t decide if it&#39;s supposed to parse <em>another</em> expression for <code>inits</code>, or <code>...</code>.  Sadly, it isn&#39;t quite clever enough to realise that <code>...</code> isn&#39;t a valid expression, so it gives up.  Thankfully, the fix is relatively simple: we remove the comma from the syntax.  To keep things balanced, we&#39;ll remove <em>both</em> commas around <code>...</code>:</p>
+<p>Here, we&#39;ve run into a limitation of <code>macro_rules</code>.  The problem is that second comma.  When it sees it during expansion, <code>macro_rules</code> can&#39;t decide if it&#39;s supposed to parse <em>another</em> expression for <code>inits</code>, or <code>...</code>.  Sadly, it isn&#39;t quite clever enough to realise that <code>...</code> isn&#39;t a valid expression, so it gives up.  Theoretically, this <em>should</em> work as desired, but currently doesn&#39;t.  Thankfully, the fix is relatively simple: we remove the comma from the syntax.  To keep things balanced, we&#39;ll remove <em>both</em> commas around <code>...</code>:</p>
 <pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
 
@@ -937,6 +999,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2
             }
 
             <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+                <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
                     <span class='comment'>/* ... */</span>
                 }
@@ -1033,6 +1096,10 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2
 </pre>
 
 <p>What we&#39;ve done is move the comma from <em>between</em> the repeats, to out the front of them.  When we expand, we can then glue the <code>tail</code> expression back together with commas <em>between</em> them.  With this, we can now modify <code>recurrence</code> to determine the necessary size of <code>mem</code>.</p>
+
+<blockquote>
+<p><strong>Note</strong>: The lexical ordering of <code>count_exprs</code> and <code>recurrence</code> is important.  This will be expounded upon at the end.</p>
+</blockquote>
 <pre class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     () <span class='op'>=&gt;</span> (<span class='number'>0</span>);
@@ -1063,6 +1130,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2
             }
 
             <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+                <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>MEMORY</span> {
                         <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='self'>self</span>.<span class='ident'>pos</span>];
@@ -1161,6 +1229,7 @@ recurrence.rs:68:15: 68:65 note: expansion site
                 }
             }
             <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+                <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>MEMORY</span> {
                         <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='self'>self</span>.<span class='ident'>pos</span>];
@@ -1232,28 +1301,28 @@ recurrence.rs:68:15: 68:65 note: expansion site
 
 <style type="text/css">.sc-1 { background-color: #faa; }</style>
 
-<pre class="rust"><span class="sc-0">macro_rules! using_a {</span><span class="sc-1">
-    ($e:expr) => {
+<pre class="rust"><span class="sc-0">macro_rules! using_a {
+    ($e:expr) => {</span><span class="sc-1">
         {
             let a = 42i;
             $e
         }
-    }
-</span><span class="sc-0">}
+    </span><span class="sc-0">}
+}
 
 let four = using_a!(a / 10);</span>
 </pre>
 
 <p>Now, let&#39;s expand the invocation.</p>
 
-<pre class="rust"><span class="sc-0">macro_rules! using_a {</span><span class="sc-1">
-    ($e:expr) => {
+<pre class="rust"><span class="sc-0">macro_rules! using_a {
+    ($e:expr) => {</span><span class="sc-1">
         {
             let a = 42i;
             $e
         }
-    }
-</span><span class="sc-0">}
+    </span><span class="sc-0">}
+}
 
 let four = </span><span class="sc-1">{
     let a = 42i;
@@ -1329,6 +1398,7 @@ let four = </span><span class="sc-1">{
             }
 
             <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+                <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>MEMORY</span> {
                         <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='self'>self</span>.<span class='ident'>pos</span>];
@@ -1370,7 +1440,7 @@ let four = </span><span class="sc-1">{
 
 <p>And it compiles!  Now, let&#39;s try with a different sequence.</p>
 <pre class='rust '>
-<span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='macro'>recurrence</span><span class='macro'>!</span>(<span class='ident'>f</span>[<span class='ident'>i</span>]: <span class='ident'>f64</span> <span class='op'>=</span> <span class='number'>1f64</span> ... <span class='ident'>f</span>[<span class='ident'>i</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>*</span> <span class='ident'>i</span> <span class='kw'>as</span> <span class='ident'>f64</span>).<span class='ident'>take</span>(<span class='number'>10</span>) {
+<span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='macro'>recurrence</span><span class='macro'>!</span>(<span class='ident'>f</span>[<span class='ident'>i</span>]: <span class='ident'>f64</span> <span class='op'>=</span> <span class='number'>1.0</span> ... <span class='ident'>f</span>[<span class='ident'>i</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>*</span> <span class='ident'>i</span> <span class='kw'>as</span> <span class='ident'>f64</span>).<span class='ident'>take</span>(<span class='number'>10</span>) {
     <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>)
 }
 </pre>
@@ -1391,12 +1461,247 @@ let four = </span><span class="sc-1">{
 
 <p>Success!</p>
 
-<h1 id="todo" class='section-header'><a
-                           href="#todo">4 TODO</a></h1>
-<ul>
-<li>Mention synexts.</li>
-<li>Publish gist.</li>
-</ul>
+<h1 id="the-nuclear-option" class='section-header'><a
+                           href="#the-nuclear-option">4 The Nuclear Option</a></h1>
+<p>There <em>is</em> another way to write a macro for Rust: write a &quot;syntax extension&quot;.  This is a regular Rust library that links aginst <code>libsyntax</code> and is loaded by the compiler at compile time.  Going further into this is completely beyond the scope of this article.  If you want to learn more, you can read the <a href="http://doc.rust-lang.org/guide-plugin.html">official Rust Compiler Plugins Guide</a>, but even then be prepared to do a lot of code spelunking!</p>
+
+<p>That said, syntax extensions can do pretty much anything, as they have full access to the AST, the compiler&#39;s parser, and all the usual Rust libraries.  As a <em>very</em> minimal example, a syntax extension could have worked around that <em>trifling</em> business with the commas and <code>...</code>.  If you enjoy metaprogramming, it may be worthwhile to take a stab at them.</p>
+
+<h1 id="some-more-gotchas" class='section-header'><a
+                           href="#some-more-gotchas">5 Some More Gotchas</a></h1>
+<p>Before we move on, it&#39;s worth covering some important differences between macros and other items in Rust.</p>
+
+<p><strong>Macros are order-dependent.</strong> That means that you <em>cannot</em> use a macro <em>before</em> it has been defined.</p>
+
+<p><strong>Macros are (sometimes) lexically-scoped.</strong> This is a bit weird in Rust.  Remember that all Rust crates are really just a single, giant file often <em>pretending</em> to be multiple files.  This means that the following will happen:</p>
+
+<table>
+    <tr>
+        <td><code>lib.rs</code></td>
+        <td><pre class="rust">/* X is *not* defined. */
+mod a;
+/* X is *not* defined. */
+mod b;
+/* X is *not* defined. */
+mod c;
+/* X is *not* defined. */</pre></td>
+    </tr>
+    <tr>
+        <td><code>a.rs</code></td>
+        <td><pre class="rust">/* X is *not* defined. */</pre></td>
+    </tr>
+    <tr>
+        <td><code>b.rs</code></td>
+        <td><pre class="rust">/* ... */
+/* X is *not* defined. */
+macro_rules! X { () => ("X") }
+/* X *is* defined. */
+/* ... */</pre></td>
+    </tr>
+    <tr>
+        <td><code>c.rs</code></td>
+        <td><pre class="rust">/* X is *not* defined. */</pre></td>
+    </tr>
+</table>
+
+<p>However, we can alter this behaviour by applying the <code>#[macro_escape]</code> attribute like so:</p>
+
+<table>
+    <tr>
+        <td><code>lib.rs</code></td>
+        <td><pre class="rust">/* X is *not* defined. */
+mod a;
+/* X is *not* defined. */
+#[macro_escape] mod b;
+/* X *is* defined. */
+mod c;
+/* X *is* defined. */</pre></td>
+    </tr>
+    <tr>
+        <td><code>a.rs</code></td>
+        <td><pre class="rust">/* X is *not* defined. */</pre></td>
+    </tr>
+    <tr>
+        <td><code>b.rs</code></td>
+        <td><pre class="rust">/* ... */
+/* X is *not* defined. */
+macro_rules! X { () => ("X") }
+/* X *is* defined. */
+/* ... */</pre></td>
+    </tr>
+    <tr>
+        <td><code>c.rs</code></td>
+        <td><pre class="rust">/* X *is* defined. */</pre></td>
+    </tr>
+</table>
+
+<p>Note that the definition of <code>X</code> cuts clear through the module heirarchy and across files.  For this reason, I personally recommend that you always define macros in the <em>first</em> module defined in a library, or at the top of your <code>lib.rs</code> or <code>main.rs</code> file.</p>
+
+<p><strong>Macros are individually exported.</strong> In order to make a macro available to other crates, you have to use the <code>#[macro_export]</code> attribute.  Note that this and <code>#[macro_escape]</code> are <em>unrelated</em>.  You can have a macro exported to other crates, but which is not available to most of your own crate.  So, for example:</p>
+<pre class='rust '>
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>X</span> { () <span class='op'>=&gt;</span> (<span class='string'>&quot;X&quot;</span>) }
+</pre>
+
+<p>This would make <code>X</code> available to other crates.  However...</p>
+
+<p><strong>Macros are plugins.</strong> That is, you cannot access macros simply by using <code>extern crate stuff;</code>.  Instead, you need to use <code>#[phase(plugin)] extern crate stuff;</code>.  This tells the compiler that it needs to load <code>libstuff</code> at compile time, as opposed to at runtime.</p>
+
+<p>Some crates which export macros also need to be linked at runtime (the macro might rely on some runtime functionality in its expansion).  In those cases, you will need to use <code>#[phase(plugin, link)] extern crate stuff;</code>.  Note that <code>link</code> is just the default setting for the <code>phase</code> attribute if you don&#39;t specify it.</p>
+
+<p>A final thing to be aware of:</p>
+
+<p><strong>Macros are all-or-nothing.</strong> You need to be a little careful when choosing macro names.  If you link a plugin crate, you get <em>all</em> of its exported macros.  You cannot pick and choose.  Usually, if two libraries have conflicting items, you can just rename them, but you cannot currently do this with macros.  You must be cautious.</p>
+
+<h1 id="distribution" class='section-header'><a
+                           href="#distribution">6 Distribution</a></h1>
+<p>So, we have a nice little <code>recurrence</code> macro, and we&#39;d like to make it available for other people to use.  How do we do this?</p>
+
+<p>The best approach is to package it up in a Cargo package and put it online somewhere.  Drop into a terminal and create a new Cargo package like so:</p>
+
+<pre><code class="language-{shell}">$ cargo new recurrence
+</code></pre>
+
+<p>This should create a <code>recurrence/.gitignore</code>, <code>recurrence/Cargo.toml</code> and <code>recurrence/src/lib.rs</code>.  You will need to modify the <code>Cargo.toml</code> to look like this:</p>
+
+<pre><code class="language-{toml}">[package]
+
+name = &quot;recurrence&quot;
+version = &quot;0.0.1&quot;
+authors = [&quot;Writer McAuthor &lt;writer.mcauthor@mail.com&gt;&quot;]
+
+[lib]
+
+name = &quot;recurrence&quot;
+crate-type = [&quot;dylib&quot;]
+plugin = true
+</code></pre>
+
+<p>The really important part is <code>plugin = true</code>.  This tells Cargo that it needs to make the compiled crate available to the compiler.  Next, we&#39;ll fill out <code>lib.rs</code>:</p>
+<pre class='rust '>
+<span class='doccomment'>//! This crate defines a macro for creating iterators which implement</span>
+<span class='doccomment'>//! recurrence relations.</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
+
+<span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>_recurrence_count_exprs</span> {
+    () <span class='op'>=&gt;</span> (<span class='number'>0</span>);
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>head</span>:<span class='ident'>expr</span> $(, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>:<span class='ident'>expr</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> (<span class='number'>1</span> <span class='op'>+</span> <span class='macro'>_recurrence_count_exprs</span><span class='macro'>!</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>),<span class='op'>*</span>));
+}
+
+<span class='doccomment'>/// Expands to an expression implementing the `Iterator` trait, which yields</span>
+<span class='doccomment'>/// successive elements of the given recurrence relationship.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// For example, you can define a Fibonacci sequence iterator like so:</span>
+<span class='doccomment'>/// </span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// # #![feature(phase)]</span>
+<span class='doccomment'>/// # #[phase(plugin)] extern crate recurrence;</span>
+<span class='doccomment'>/// # fn main() {</span>
+<span class='doccomment'>/// #     let _ =</span>
+<span class='doccomment'>/// recurrence![ fib[n]: f64 = 0.0, 1.0 ... fib[n-1] + fib[n-2] ]</span>
+<span class='doccomment'>/// #     ;</span>
+<span class='doccomment'>/// # }</span>
+<span class='doccomment'>/// ```</span>
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>recurrence</span> {
+    ( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>seq</span>:<span class='ident'>ident</span> [ <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ind</span>:<span class='ident'>ident</span> ]: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>:<span class='ident'>ty</span> <span class='op'>=</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>:<span class='ident'>expr</span>),<span class='op'>+</span> ... <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>recur</span>:<span class='ident'>expr</span> ) <span class='op'>=&gt;</span> {
+        {
+            <span class='kw'>const</span> <span class='ident'>MEMORY</span>: <span class='ident'>uint</span> <span class='op'>=</span> <span class='macro'>_recurrence_count_exprs</span><span class='macro'>!</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>);
+
+            <span class='kw'>struct</span> <span class='ident'>Recurrence</span> {
+                <span class='ident'>mem</span>: [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>, ..<span class='ident'>MEMORY</span>],
+                <span class='ident'>pos</span>: <span class='ident'>uint</span>,
+            }
+
+            <span class='kw'>struct</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+                <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>, ..<span class='ident'>MEMORY</span>],
+                <span class='ident'>offset</span>: <span class='ident'>uint</span>,
+            }
+
+            <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='ident'>uint</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+                <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
+                <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='kw-2'>&amp;</span><span class='ident'>uint</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span> {
+                    <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>index</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>MEMORY</span>;
+                    <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>]
+                }
+            }
+
+            <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
+                <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+                <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> {
+                    <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>MEMORY</span> {
+                        <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='self'>self</span>.<span class='ident'>pos</span>];
+                        <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='number'>1</span>;
+                        <span class='prelude-val'>Some</span>(<span class='ident'>next_val</span>)
+                    } <span class='kw'>else</span> {
+                        <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> {
+                            <span class='kw'>let</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ind</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pos</span>;
+                            <span class='kw'>let</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>seq</span> <span class='op'>=</span> <span class='ident'>IndexOffset</span> { <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>mem</span>, <span class='ident'>offset</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ind</span> };
+                            <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>recur</span>
+                        };
+
+                        {
+                            <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>swap</span>;
+
+                            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span> <span class='op'>=</span> <span class='ident'>next_val</span>;
+                            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='ident'>MEMORY</span>).<span class='ident'>rev</span>() {
+                                <span class='ident'>swap</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span>]);
+                            }
+                        }
+
+                        <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='number'>1</span>;
+                        <span class='prelude-val'>Some</span>(<span class='ident'>next_val</span>)
+                    }
+                }
+            }
+
+            <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
+        }
+    };
+}
+</pre>
+
+<p>Note that <code>count_exprs</code> actually causes us a small problem.  Because it&#39;s in the <em>expansion</em> of <code>recurrence</code>, it has to be available from the invocation site.  This means we <em>have</em> to export it.  However, it&#39;s really just an implementation detail.  As such, I&#39;ve given it a more unique name, exported it, and hidden it from the docs.</p>
+
+<p>I&#39;ve also added a quick example.  If you&#39;re wondering why there are all those <code>#</code>s, it&#39;s because example code blocks are, by default, also considered to be executable tests.  The <code>#</code>s hide lines that are needed for the test to execute, but which aren&#39;t relevant to the actual, rendered documentation.</p>
+
+<p>With that done, you can use <code>cargo test</code> to make sure the crate compiles and passes its one and only test, and <code>cargo doc</code> to generate the documentation and see if it looks alright.</p>
+
+<p>All you need to do now is commit the changes to the repository, and publish it somewhere publically accessible (or privately, if you aren&#39;t interesting in letting other people use your awesome macro).  To use the crate, you just need to add a dependency to it in your crate&#39;s <code>Cargo.toml</code> and then link to it.  For example, <a href="https://gist.github.com/DanielKeep/759ee2f732ecd98cc62e">the completed recurrence crate</a> is published as a GitHub Gist.  To use it, you can create another new crate...</p>
+
+<pre><code class="language-{shell}">$ cargo new ten-fib --bin
+</code></pre>
+
+<p>...modify the <code>Cargo.toml</code>...</p>
+
+<pre><code class="language-{toml}">[package]
+
+name = &quot;ten-fib&quot;
+version = &quot;0.0.1&quot;
+authors = [&quot;Writer McAuthor &lt;writer.mcauthor@mail.com&gt;&quot;]
+
+[dependencies.recurrence]
+
+git = &quot;https://gist.github.com/759ee2f732ecd98cc62e.git&quot;
+</code></pre>
+
+<p>...and put the code in <code>main.rs</code>.</p>
+<pre class='rust '>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>phase</span>)]</span>
+
+<span class='attribute'>#[<span class='ident'>phase</span>(<span class='ident'>plugin</span>)]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>recurrence</span>;
+
+<span class='kw'>fn</span> <span class='ident'>main</span>() {
+    <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>[ <span class='ident'>fib</span>[<span class='ident'>n</span>]: <span class='ident'>f64</span> <span class='op'>=</span> <span class='number'>0.0</span>, <span class='number'>1.0</span> ... <span class='ident'>fib</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>fib</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>] ];
+    <span class='kw'>for</span> (<span class='ident'>i</span>,<span class='ident'>e</span>) <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>enumerate</span>().<span class='ident'>take</span>(<span class='number'>10</span>) {
+        <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;fib[{}] = {}&quot;</span>, <span class='ident'>i</span>, <span class='ident'>e</span>);
+    }
+}
+</pre>
+
+<p>Now, go forth and metaprogram!</p>
 
     <script type="text/javascript">
         window.playgroundUrl = "";
