@@ -418,6 +418,48 @@
     table.parse-table tbody > tr > td:nth-child(2) > code {
         display: block;
     }
+
+    .katex {
+        font: 400 1.21em/1.2 KaTeX_Main;
+        white-space: nowrap;
+        font-family: "Cambria Math", "Cambria", serif;
+    }
+
+    .katex .vlist > span > {
+        display: inline-block;
+    }
+
+    .mathit {
+        font-style: italic;
+    }
+
+    .katex .reset-textstyle.scriptstyle {
+        font-size: 0.7em;
+    }
+
+    .katex .reset-textstyle.textstyle {
+        font-size: 1em;
+    }
+
+    .katex .textstyle > .mord + .mrel {
+        margin-left: 0.27778em;
+    }
+
+    .katex .textstyle > .mrel + .minner, .katex .textstyle > .mrel + .mop, .katex .textstyle > .mrel + .mopen, .katex .textstyle > .mrel + .mord {
+        margin-left: 0.27778em;
+    }
+
+    .katex .textstyle > .mclose + .minner, .katex .textstyle > .minner + .mop, .katex .textstyle > .minner + .mord, .katex .textstyle > .mpunct + .mclose, .katex .textstyle > .mpunct + .minner, .katex .textstyle > .mpunct + .mop, .katex .textstyle > .mpunct + .mopen, .katex .textstyle > .mpunct + .mord, .katex .textstyle > .mpunct + .mpunct, .katex .textstyle > .mpunct + .mrel {
+        margin-left: 0.16667em;
+    }
+
+    .katex .textstyle > .mord + .mbin {
+        margin-left: 0.22222em;
+    }
+
+    .katex .textstyle > .mbin + .minner, .katex .textstyle > .mbin + .mop, .katex .textstyle > .mbin + .mopen, .katex .textstyle > .mbin + .mord {
+        margin-left: 0.22222em;
+    }
 </style>
 
 <blockquote>
@@ -428,21 +470,31 @@
 
 <p>I&#39;ve become quite enamoured with Rust lately, due in no small part to its interesting macro system.  On a whim the other night, I decided to see about duplicating the functionality of D&#39;s <code>std.range.recurrence</code> function in Rust.  I was rather chuffed with the result, and thought that it might serve as a nice little, non-trivial example of how to construct macros in Rust.</p>
 
-<p>The TLDR of this process is that this D code:</p>
+<p>The TLDR of this article, then, is that we will construct a macro that lets us easily define recurrence relation iterators in Rust, with the following syntax:</p>
+<pre class='rust '>
+<span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>(<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]);
 
-<pre><code class="language-{d}">// a[0] = 1, a[1] = 1, and compute a[n+1] = a[n-1] + a[n]
+<span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
+</pre>
+
+<blockquote>
+<p><strong>Note</strong>: don&#39;t panic!  What follows is the only time D or math will be talked about.</p>
+</blockquote>
+
+<p>For context, <code>std.rance.recurrence</code> is a templated function which returns an iterator (called a &quot;range&quot; in D parlance) that yields successive elements of a recurrence relation.  If you aren&#39;t familiar, a recurrence relation is a sequence where each value is defined in terms of one or more <em>previous</em> values, with one or more initial values to get the whole thing started.  For example, the <a href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci sequence</a> can be defined by the relation:</p>
+
+<div class="katex" style="font-size: 100%; text-align: center;">
+    <span class="katex"><span class="katex-inner"><span style="height: 0.68333em;" class="strut"></span><span style="height: 0.891661em; vertical-align: -0.208331em;" class="strut bottom"></span><span class="base textstyle uncramped"><span class="reset-textstyle displaystyle textstyle uncramped"><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right: 0.13889em;">F</span><span class="vlist"><span style="top: 0.15em; margin-right: 0.05em; margin-left: -0.13889em;" class=""><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">n</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord">0</span><span class="mpunct">,</span><span class="mord">1</span><span class="mpunct">,</span><span class="mpunct">…</span><span class="mpunct">,</span><span class="mord"><span class="mord mathit" style="margin-right: 0.13889em;">F</span><span class="vlist"><span style="top: 0.15em; margin-right: 0.05em; margin-left: -0.13889em;" class=""><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mbin">−</span><span class="mord">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span>​</span></span></span><span class="mbin">+</span><span class="mord"><span class="mord mathit" style="margin-right: 0.13889em;">F</span><span class="vlist"><span style="top: 0.15em; margin-right: 0.05em; margin-left: -0.13889em;" class=""><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mbin">+</span><span class="mord">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span>​</span></span></span></span></span></span></span></span>
+</div>
+
+<p>The way it works in D is that the user provides the template with a string literal which contains an expression defining the recurrence.  The expression uses the fixed names <code>a</code> and <code>n</code> to refer to the sequence and the value currently being computed.  The template expands to a function which is then called with the initial elements of the sequence.  So, the Fibonacci sequence would be written, with <code>recurrence</code> in D as:</p>
+
+<pre><code class="language-{d}">// a[0] = 0, a[1] = 1, and compute a[n+1] = a[n-1] + a[n]
 auto fib = recurrence!(&quot;a[n-1] + a[n-2]&quot;)(1, 1);
 
 // print the first 10 Fibonacci numbers
 foreach (e; take(fib, 10)) { writeln(e); }
 </code></pre>
-
-<p>becomes this Rust code:</p>
-<pre class='rust '>
-<span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>(<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>1</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]);
-
-<span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
-</pre>
 
 <h1 id="macro-mechanics" class='section-header'><a
                            href="#macro-mechanics">1 Macro Mechanics</a></h1>
