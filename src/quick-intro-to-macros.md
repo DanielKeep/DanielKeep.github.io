@@ -445,14 +445,14 @@ I've become quite enamoured with Rust lately, due in no small part to its intere
 The TLDR of this article, then, is that we will construct a macro that lets us easily define recurrence relation iterators in Rust, with the following syntax:
 
 ```{ignore}
-let fib = recurrence!(a[n]: u64 = 0, 1 ... a[n-1] + a[n-2]);
+let fib = recurrence!(a[n]: u64 = 1, 1 ... a[n-1] + a[n-2]);
 
 for e in fib.take(10) { println!("{}", e) }
 ```
 
 > **Note**: don't panic!  What follows is the only time D or math will be talked about.
 
-For context, `std.rance.recurrence` is a templated function which returns an iterator (called a "range" in D parlance) that yields successive elements of a recurrence relation.  If you aren't familiar, a recurrence relation is a sequence where each value is defined in terms of one or more *previous* values, with one or more initial values to get the whole thing started.  For example, the [Fibonacci sequence](https://en.wikipedia.org/wiki/Fibonacci_number) can be defined by the relation:
+For context, `std.range.recurrence` is a templated function which returns an iterator (called a "range" in D parlance) that yields successive elements of a recurrence relation.  If you aren't familiar, a recurrence relation is a sequence where each value is defined in terms of one or more *previous* values, with one or more initial values to get the whole thing started.  For example, the [Fibonacci sequence](https://en.wikipedia.org/wiki/Fibonacci_number) can be defined by the relation:
 
 <div class="katex" style="font-size: 100%; text-align: center;">
     <span class="katex"><span class="katex-inner"><span style="height: 0.68333em;" class="strut"></span><span style="height: 0.891661em; vertical-align: -0.208331em;" class="strut bottom"></span><span class="base textstyle uncramped"><span class="reset-textstyle displaystyle textstyle uncramped"><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right: 0.13889em;">F</span><span class="vlist"><span style="top: 0.15em; margin-right: 0.05em; margin-left: -0.13889em;" class=""><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">n</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord">0</span><span class="mpunct">,</span><span class="mord">1</span><span class="mpunct">,</span><span class="mpunct">…</span><span class="mpunct">,</span><span class="mord"><span class="mord mathit" style="margin-right: 0.13889em;">F</span><span class="vlist"><span style="top: 0.15em; margin-right: 0.05em; margin-left: -0.13889em;" class=""><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mbin">−</span><span class="mord">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span>​</span></span></span><span class="mbin">+</span><span class="mord"><span class="mord mathit" style="margin-right: 0.13889em;">F</span><span class="vlist"><span style="top: 0.15em; margin-right: 0.05em; margin-left: -0.13889em;" class=""><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mbin">+</span><span class="mord">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size: 0em;" class="">​</span></span>​</span></span></span></span></span></span></span></span>
@@ -461,7 +461,7 @@ For context, `std.rance.recurrence` is a templated function which returns an ite
 The way it works in D is that the user provides the template with a string literal which contains an expression defining the recurrence.  The expression uses the fixed names `a` and `n` to refer to the sequence and the value currently being computed.  The template expands to a function which is then called with the initial elements of the sequence.  So, the Fibonacci sequence would be written, with `recurrence` in D as:
 
 ```{d}
-// a[0] = 0, a[1] = 1, and compute a[n+1] = a[n-1] + a[n]
+// a[0] = 1, a[1] = 1, and compute a[n+1] = a[n-1] + a[n]
 auto fib = recurrence!("a[n-1] + a[n-2]")(1, 1);
 
 // print the first 10 Fibonacci numbers
@@ -886,7 +886,7 @@ fn main() {
 }
 ```
 
-Note that I've changed the order of the declarations of `n` and `a`, as well as wrapped them (along with the recurrence expression) in a block.  The reason for the first should be obvious (`n` needs to be defined first so I can use it for `a`).  The reason for the second is that the borrowed reference `&self.mem` will prevent the swaps later on from happening (you cannot mutate something that is alised elsewhere).  The block ensures that the `&self.mem` borrow expires before then.
+Note that I've changed the order of the declarations of `n` and `a`, as well as wrapped them (along with the recurrence expression) in a block.  The reason for the first should be obvious (`n` needs to be defined first so I can use it for `a`).  The reason for the second is that the borrowed reference `&self.mem` will prevent the swaps later on from happening (you cannot mutate something that is aliased elsewhere).  The block ensures that the `&self.mem` borrow expires before then.
 
 Incidentally, the only reason the code that does the `mem` swaps is in a block is to narrow the scope in which `std::mem::swap` is available, for the sake of being tidy.
 
@@ -1825,7 +1825,7 @@ macro_rules! _recurrence_count_exprs {
 /// # #[phase(plugin)] extern crate recurrence;
 /// # fn main() {
 /// #     let _ =
-/// recurrence![ fib[n]: f64 = 0.0, 1.0 ... fib[n-1] + fib[n-2] ]
+/// recurrence![ fib[n]: f64 = 1.0, 1.0 ... fib[n-1] + fib[n-2] ]
 /// #     ;
 /// # }
 /// ```
@@ -1895,7 +1895,7 @@ I've also added a quick example.  If you're wondering why there are all those `#
 
 With that done, you can use `cargo test` to make sure the crate compiles and passes its one and only test, and `cargo doc` to generate the documentation and see if it looks alright.
 
-All you need to do now is to commit the changes to the repository, and publish it somewhere publically accessible (or privately, if you aren't interesting in letting other people use your awesome macro).  To use the crate, you just need to add a dependency to it in your crate's `Cargo.toml` and then link to it.  For example, [the completed recurrence crate](https://gist.github.com/DanielKeep/759ee2f732ecd98cc62e) is published as a GitHub Gist.  To use it, you can create another new crate...
+All you need to do now is to commit the changes to the repository, and publish it somewhere publicly accessible (or privately, if you aren't interested in letting other people use your awesome macro).  To use the crate, you just need to add a dependency on it in your crate's `Cargo.toml` and then link to it.  For example, [the completed recurrence crate](https://gist.github.com/DanielKeep/759ee2f732ecd98cc62e) is published as a GitHub Gist.  To use it, you can create another new crate...
 
 ```{shell}
 $ cargo new ten-fib --bin
@@ -1923,7 +1923,7 @@ git = "https://gist.github.com/759ee2f732ecd98cc62e.git"
 #[phase(plugin)] extern crate recurrence;
 
 fn main() {
-    let fib = recurrence![ fib[n]: f64 = 0.0, 1.0 ... fib[n-1] + fib[n-2] ];
+    let fib = recurrence![ fib[n]: f64 = 1.0, 1.0 ... fib[n-1] + fib[n-2] ];
     for (i,e) in fib.enumerate().take(10) {
         println!("fib[{}] = {}", i, e);
     }
