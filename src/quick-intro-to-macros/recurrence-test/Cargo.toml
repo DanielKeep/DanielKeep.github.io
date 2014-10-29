@@ -1,0 +1,9 @@
+[package]
+
+name = "recurrence-test"
+version = "0.0.1"
+authors = ["Daniel Keep <daniel.keep@gmail.com>"]
+
+[dependencies.recurrence]
+
+git = "https://gist.github.com/759ee2f732ecd98cc62e.git"

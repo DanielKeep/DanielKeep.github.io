@@ -1,0 +1,12 @@
+[package]
+
+name = "recurrence"
+version = "0.0.1"
+authors = ["Daniel Keep <daniel.keep@gmail.com>"]
+
+[lib]
+
+name = "recurrence"
+path = "lib.rs"
+crate-type = ["dylib"]
+plugin = true

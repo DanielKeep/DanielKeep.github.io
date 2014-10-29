@@ -26,7 +26,8 @@
 <li><a href="#being-hygienic">3.2 Being Hygienic</a><ul></ul></li></ul></li>
 <li><a href="#the-nuclear-option">4 The Nuclear Option</a><ul></ul></li>
 <li><a href="#some-more-gotchas">5 Some More Gotchas</a><ul></ul></li>
-<li><a href="#distribution">6 Distribution</a><ul></ul></li></ul></nav><style type="text/css">
+<li><a href="#distribution">6 Distribution</a><ul></ul></li>
+<li><a href="#postscript">7 Postscript</a><ul></ul></li></ul></nav><style type="text/css">
     /**
      * Copyright 2013 The Rust Project Developers. See the COPYRIGHT
      * file at the top-level directory of this distribution and at
@@ -1515,7 +1516,7 @@ let four = </span><span class="sc-1">{
 
 <h1 id="the-nuclear-option" class='section-header'><a
                            href="#the-nuclear-option">4 The Nuclear Option</a></h1>
-<p>There <em>is</em> another way to write a macro for Rust: write a &quot;syntax extension&quot;.  This is a regular Rust library that links aginst <code>libsyntax</code> and is loaded by the compiler at compile time.  Going further into this is completely beyond the scope of this article.  If you want to learn more, you can read the <a href="http://doc.rust-lang.org/guide-plugin.html">official Rust Compiler Plugins Guide</a>, but even then be prepared to do a lot of code spelunking!</p>
+<p>There <em>is</em> another way to create a macro for Rust: write a &quot;syntax extension&quot;.  This is a regular Rust library that links aginst <code>libsyntax</code> and is loaded by the compiler at compile time.  Going further into this is completely beyond the scope of this article.  If you want to learn more, you can read the <a href="http://doc.rust-lang.org/guide-plugin.html">official Rust Compiler Plugins Guide</a>, but even then be prepared to do a lot of code spelunking!</p>
 
 <p>That said, syntax extensions can do pretty much anything, as they have full access to the AST, the compiler&#39;s parser, and all the usual Rust libraries.  As a <em>very</em> minimal example, a syntax extension could have worked around that <em>trifling</em> business with the commas and <code>...</code>.  If you enjoy metaprogramming, it may be worthwhile to take a stab at them.</p>
 
@@ -1721,7 +1722,7 @@ plugin = true
 
 <p>With that done, you can use <code>cargo test</code> to make sure the crate compiles and passes its one and only test, and <code>cargo doc</code> to generate the documentation and see if it looks alright.</p>
 
-<p>All you need to do now is commit the changes to the repository, and publish it somewhere publically accessible (or privately, if you aren&#39;t interesting in letting other people use your awesome macro).  To use the crate, you just need to add a dependency to it in your crate&#39;s <code>Cargo.toml</code> and then link to it.  For example, <a href="https://gist.github.com/DanielKeep/759ee2f732ecd98cc62e">the completed recurrence crate</a> is published as a GitHub Gist.  To use it, you can create another new crate...</p>
+<p>All you need to do now is to commit the changes to the repository, and publish it somewhere publically accessible (or privately, if you aren&#39;t interesting in letting other people use your awesome macro).  To use the crate, you just need to add a dependency to it in your crate&#39;s <code>Cargo.toml</code> and then link to it.  For example, <a href="https://gist.github.com/DanielKeep/759ee2f732ecd98cc62e">the completed recurrence crate</a> is published as a GitHub Gist.  To use it, you can create another new crate...</p>
 
 <pre><code class="language-{shell}">$ cargo new ten-fib --bin
 </code></pre>
@@ -1754,6 +1755,10 @@ git = &quot;https://gist.github.com/759ee2f732ecd98cc62e.git&quot;
 </pre>
 
 <p>Now, go forth and metaprogram!</p>
+
+<h1 id="postscript" class='section-header'><a
+                           href="#postscript">7 Postscript</a></h1>
+<p>Thanks to <code>snake_case</code> and <code>Yurume</code> for providing feedback.</p>
 
     <script type="text/javascript">
         window.playgroundUrl = "";
