@@ -1004,7 +1004,7 @@ Success!  We can now start replacing things in the *expansion* with things we've
 
 ## Substitution
 
-Substituting something you've captured in a macro is quite simple; you can insert the contents of a capture `$sty:ty` by using `$sty`.  So, let's go through an fix the `u64`s (look for `$sty`):
+Substituting something you've captured in a macro is quite simple; you can insert the contents of a capture `$sty:ty` by using `$sty`.  So, let's go through and fix the `u64`s (look for `$sty`):
 
 ```
 #![feature(macro_rules)]

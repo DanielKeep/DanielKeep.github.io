@@ -1026,7 +1026,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2
 
 <h2 id="substitution" class='section-header'><a
                            href="#substitution">3.1 Substitution</a></h2>
-<p>Substituting something you&#39;ve captured in a macro is quite simple; you can insert the contents of a capture <code>$sty:ty</code> by using <code>$sty</code>.  So, let&#39;s go through an fix the <code>u64</code>s (look for <code>$sty</code>):</p>
+<p>Substituting something you&#39;ve captured in a macro is quite simple; you can insert the contents of a capture <code>$sty:ty</code> by using <code>$sty</code>.  So, let&#39;s go through and fix the <code>u64</code>s (look for <code>$sty</code>):</p>
 <pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
 
