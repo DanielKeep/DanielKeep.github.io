@@ -491,7 +491,7 @@
 <p>The way it works in D is that the user provides the template with a string literal which contains an expression defining the recurrence.  The expression uses the fixed names <code>a</code> and <code>n</code> to refer to the sequence and the value currently being computed.  The template expands to a function which is then called with the initial elements of the sequence.  So, the Fibonacci sequence would be written, with <code>recurrence</code> in D as:</p>
 
 <pre><code class="language-{d}">// a[0] = 0, a[1] = 1, and compute a[n+1] = a[n-1] + a[n]
-auto fib = recurrence!(&quot;a[n-1] + a[n-2]&quot;)(1, 1);
+auto fib = recurrence!(&quot;a[n-1] + a[n-2]&quot;)(0, 1);
 
 // print the first 10 Fibonacci numbers
 foreach (e; take(fib, 10)) { writeln(e); }
@@ -505,12 +505,12 @@ foreach (e; take(fib, 10)) { writeln(e); }
 
 <p>However, the status of macro invocations as first-class members of the AST means that the Rust parser has to be able to parse them into something sensible, even when they use syntax that Rust itself doesn&#39;t support.  The way this is done is by parsing the contents of an invocation into &quot;token trees&quot;.  If we take the <code>fib</code> example above, given the invocation:</p>
 <pre class='rust '>
-<span class='macro'>recurrence</span><span class='macro'>!</span>(<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>1</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>])
+<span class='macro'>recurrence</span><span class='macro'>!</span>(<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>])
 </pre>
 
 <p>the invocation arguments stored in the AST look something like:</p>
 
-<pre><code class="language-{text}">[ `a` `[ ]` `:` `u64` `=` `1` `,` `1` `...` `a` `[ ]` `+` `a` `[ ]` ]
+<pre><code class="language-{text}">[ `a` `[ ]` `:` `u64` `=` `0` `,` `1` `...` `a` `[ ]` `+` `a` `[ ]` ]
         ^                                         ^             |
      [ `n` ]                               [ `n` `-` `1` ]      ^
                                                          [ `n` `-` `2` ]
@@ -527,7 +527,7 @@ foreach (e; take(fib, 10)) { writeln(e); }
 <p>Usually, when working on a new macro, the first thing I do is decide what the macro invocation should look like.  In this specific case, my first attempt looked like this:</p>
 <pre class='rust '>
 <span class='comment'>/*
-let fib = recurrence![a[n] = 1, 1, ..., a[n-1] + a[n-2]];
+let fib = recurrence![a[n] = 0, 1, ..., a[n-1] + a[n-2]];
 
 for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 */</span>
@@ -572,49 +572,49 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>⌂</code></td>
-            <td><code>a[n] = 1, 1, ..., a[n-1] + a[n-2]</code></td>
+            <td><code>a[n] = 0, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code> ⌂</code></td>
-            <td><code>[n] = 1, 1, ..., a[n-1] + a[n-2]</code></td>
+            <td><code>[n] = 0, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>  ⌂</code></td>
-            <td><code>n] = 1, 1, ..., a[n-1] + a[n-2]</code></td>
+            <td><code>n] = 0, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>   ⌂</code></td>
-            <td><code>] = 1, 1, ..., a[n-1] + a[n-2]</code></td>
+            <td><code>] = 0, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>     ⌂</code></td>
-            <td><code>= 1, 1, ..., a[n-1] + a[n-2]</code></td>
+            <td><code>= 0, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>       ⌂</code></td>
-            <td><code>1, 1, ..., a[n-1] + a[n-2]</code></td>
+            <td><code>0, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>         ⌂</code></td>
-            <td><code>1, 1, ..., a[n-1] + a[n-2]</code></td>
+            <td><code>0, 1, ..., a[n-1] + a[n-2]</code></td>
             <td></td>
             <td></td>
         </tr>
@@ -622,7 +622,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>                     ⌂  ⌂</code></td>
             <td><code>, 1, ..., a[n-1] + a[n-2]</code></td>
-            <td><code>1</code></td>
+            <td><code>0</code></td>
             <td></td>
         </tr>
         <tr>
@@ -635,42 +635,42 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>         ⌂                ⌂</code></td>
             <td><code>1, ..., a[n-1] + a[n-2]</code></td>
-            <td><code>1</code></td>
+            <td><code>0</code></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>                     ⌂  ⌂</code></td>
             <td><code>, ..., a[n-1] + a[n-2]</code></td>
-            <td><code>1</code>, <code>1</code></td>
+            <td><code>0</code>, <code>1</code></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>         ⌂                ⌂</code></td>
             <td><code>..., a[n-1] + a[n-2]</code></td>
-            <td><code>1</code>, <code>1</code></td>
+            <td><code>0</code>, <code>1</code></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>                              ⌂</code></td>
             <td><code>, a[n-1] + a[n-2]</code></td>
-            <td><code>1</code>, <code>1</code></td>
+            <td><code>0</code>, <code>1</code></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>                                ⌂</code></td>
             <td><code>a[n-1] + a[n-2]</code></td>
-            <td><code>1</code>, <code>1</code></td>
+            <td><code>0</code>, <code>1</code></td>
             <td></td>
         </tr>
         <tr>
             <td><code>a[n] = $($inits:expr),+ , ... , $recur:expr</code>
                 <code>                                           ⌂</code></td>
             <td></td>
-            <td><code>1</code>, <code>1</code></td>
+            <td><code>0</code>, <code>1</code></td>
             <td><code>a[n-1] + a[n-2]</code></td>
         </tr>
     </tbody>
@@ -719,7 +719,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 <p>This is a bit harder; we&#39;ll come back and look at <em>how</em> exactly to define <code>a</code>.  Also, <code>TODO_shuffle_down_and_append</code> is another placeholder; I want something that places <code>next_val</code> on the end of the array, shuffling the rest down by one space, dropping the 0th element.</p>
 <pre class='rust '>
 
-    <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>1</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
+    <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>0</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
 };
 
 <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
@@ -753,7 +753,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
         }
     }
 
-    <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>1</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
+    <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>0</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
 };
 
 <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
@@ -770,7 +770,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 }
 
 <span class='comment'>/*
-let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2]];
+let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2]];
 
 for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 */</span>
@@ -855,7 +855,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 
 <span class='kw'>fn</span> <span class='ident'>main</span>() {
     <span class='comment'>/*
-    let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2]];
+    let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2]];
 
     for e in fib.take(10) { println!(&quot;{}&quot;, e) }
     */</span>
@@ -907,7 +907,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
             }
         }
 
-        <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>1</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
+        <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>0</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
     };
 
     <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
@@ -920,7 +920,8 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 
 <p>If we take this code and run it, we get:</p>
 
-<pre><code class="language-{text}">1
+<pre><code class="language-{text}">0
+1
 1
 2
 3
@@ -929,7 +930,6 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 13
 21
 34
-55
 </code></pre>
 
 <p>Success!  Now, let&#39;s copy &amp; paste this into the macro expansion, and replace the expanded code with an invocation.  This gives us:</p>
@@ -986,13 +986,13 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
                 }
             }
 
-            <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>1</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
+            <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>0</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
         }
     };
 }
 
 <span class='kw'>fn</span> <span class='ident'>main</span>() {
-    <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>[<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>1</span>, <span class='number'>1</span>, ..., <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]];
+    <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>[<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>, <span class='number'>1</span>, ..., <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]];
 
     <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
 }
@@ -1001,7 +1001,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 <p>Obviously, we aren&#39;t <em>using</em> the captures yet, but we can change that fairly easily.  However, if we try to compile this, <code>rustc</code> aborts, telling us:</p>
 
 <pre><code class="language-{text}">recurrence.rs:61:45: 61:48 error: local ambiguity: multiple parsing options: built-in NTs expr (&#39;inits&#39;) or 1 other options.
-recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2]];
+recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2]];
                                                              ^~~
 </code></pre>
 
@@ -1016,7 +1016,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2
 }
 
 <span class='kw'>fn</span> <span class='ident'>main</span>() {
-    <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>[<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>1</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]];
+    <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>[<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]];
 
     <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
 }
@@ -1058,24 +1058,24 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2
                 }
             }
 
-            <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>1</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
+            <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>0</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
         }
     };
 }
 
 <span class='kw'>fn</span> <span class='ident'>main</span>() {
-    <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>[<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>1</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]];
+    <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>[<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]];
 
     <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
 }
 </pre>
 
-<p>Let&#39;s tackle a harder one: how to turn <code>inits</code> into both the array literal <code>[1, 1]</code> <em>and</em> the array type, <code>[$sty, ..2]</code>.  The first one we can do like so:</p>
+<p>Let&#39;s tackle a harder one: how to turn <code>inits</code> into both the array literal <code>[0, 1]</code> <em>and</em> the array type, <code>[$sty, ..2]</code>.  The first one we can do like so:</p>
 <pre class='rust '>
             <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
 </pre>
 
-<p>This effectively does the opposite of the capture: repeat <code>inits</code> one or more times, separating each with a comma.  This expands to the expected sequence of tokens: <code>1, 1</code>.</p>
+<p>This effectively does the opposite of the capture: repeat <code>inits</code> one or more times, separating each with a comma.  This expands to the expected sequence of tokens: <code>0, 1</code>.</p>
 
 <p>Somehow turning <code>inits</code> into a literal <code>2</code> is a little trickier.  It turns out that there&#39;s no direct way to do this, but we <em>can</em> do it by using a second macro.  Let&#39;s take this one step at a time.</p>
 <pre class='rust '>
@@ -1225,23 +1225,23 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 1, 1, ..., a[n-1] + a[n-2
 <p>And, when we compile our finished macro...</p>
 
 <pre><code class="language-{text}">recurrence.rs:68:48: 68:49 error: unresolved name `a`.
-recurrence.rs:68     let fib = recurrence![a[n]: u64 = 1, 1 ... a[n-1] + a[n-2]];
-                                                         ^
+recurrence.rs:68     let fib = recurrence![a[n]: u64 = 0, 1 ... a[n-1] + a[n-2]];
+                                                                ^
 recurrence.rs:11:1: 65:2 note: in expansion of recurrence!
 recurrence.rs:68:15: 68:65 note: expansion site
 recurrence.rs:68:50: 68:51 error: unresolved name `n`.
-recurrence.rs:68     let fib = recurrence![a[n]: u64 = 1, 1 ... a[n-1] + a[n-2]];
-                                                           ^
-recurrence.rs:11:1: 65:2 note: in expansion of recurrence!
-recurrence.rs:68:15: 68:65 note: expansion site
-recurrence.rs:68:57: 68:58 error: unresolved name `a`.
-recurrence.rs:68     let fib = recurrence![a[n]: u64 = 1, 1 ... a[n-1] + a[n-2]];
+recurrence.rs:68     let fib = recurrence![a[n]: u64 = 0, 1 ... a[n-1] + a[n-2]];
                                                                   ^
 recurrence.rs:11:1: 65:2 note: in expansion of recurrence!
 recurrence.rs:68:15: 68:65 note: expansion site
+recurrence.rs:68:57: 68:58 error: unresolved name `a`.
+recurrence.rs:68     let fib = recurrence![a[n]: u64 = 0, 1 ... a[n-1] + a[n-2]];
+                                                                         ^
+recurrence.rs:11:1: 65:2 note: in expansion of recurrence!
+recurrence.rs:68:15: 68:65 note: expansion site
 recurrence.rs:68:59: 68:60 error: unresolved name `n`.
-recurrence.rs:68     let fib = recurrence![a[n]: u64 = 1, 1 ... a[n-1] + a[n-2]];
-                                                                    ^
+recurrence.rs:68     let fib = recurrence![a[n]: u64 = 0, 1 ... a[n-1] + a[n-2]];
+                                                                           ^
 recurrence.rs:11:1: 65:2 note: in expansion of recurrence!
 recurrence.rs:68:15: 68:65 note: expansion site
 </code></pre>
@@ -1308,7 +1308,7 @@ recurrence.rs:68:15: 68:65 note: expansion site
                     }
                 }
             }
-            <span class='ident'>Recurrence</span>{<span class='ident'>mem</span>: [<span class='number'>1</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span>,}
+            <span class='ident'>Recurrence</span>{<span class='ident'>mem</span>: [<span class='number'>0</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span>,}
         };
     <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) {
         <span class='kw'>match</span> (<span class='kw-2'>&amp;</span><span class='ident'>e</span>,) {
@@ -1485,7 +1485,7 @@ let four = </span><span class="sc-1">{
 }
 
 <span class='kw'>fn</span> <span class='ident'>main</span>() {
-    <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>[<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>1</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]];
+    <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>[<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]];
 
     <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
 }
@@ -1759,6 +1759,8 @@ git = &quot;https://gist.github.com/759ee2f732ecd98cc62e.git&quot;
 <h1 id="postscript" class='section-header'><a
                            href="#postscript">7 Postscript</a></h1>
 <p>Thanks to <code>snake_case</code> and <code>Yurume</code> for providing feedback.</p>
+
+<p>Thanks to <code>akavel</code> for typo corrections.</p>
 
     <script type="text/javascript">
         window.playgroundUrl = "";
