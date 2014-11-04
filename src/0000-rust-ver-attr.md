@@ -382,8 +382,6 @@ This RFC proposes adding a `#![rust_ver="..."]` attribute and `--rust-ver` compi
 
 # Motivation
 
-**TODO**: Clearly break this into "benefits of the now" and "potential benefits in the future".
-
 There are several major motivations for this addition:
 
 - Giving users clearer, more accurate information when attempting to compile code that is unsupported by their current compiler.
