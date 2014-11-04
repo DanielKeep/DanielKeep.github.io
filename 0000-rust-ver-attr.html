@@ -516,7 +516,7 @@ error: aborting due to previous error
 
 <h2 id="why-<em>now</em>?" class='section-header'><a
                            href="#why-<em>now</em>?">2.4 Why <em>Now</em>?</a></h2>
-<p>One important question is: why not simply make these changes later, when Rust 2.0 is definitely going to happen?  The problem here is not with the language itself, but rather with the <em>ecosystem</em>.  The &quot;Python Package Index&quot; has, amongst its package metadata, what version or versions of the language a package supports.  However, this metadata is <em>not required</em> and was only added <em>after</em> Python 3.0 became a concern.  As a result, it is entirely possible to accidentally install a package for the wrong version of the language.</p>
+<p>One important question is: why not simply make these changes later, when Rust 2.0 is definitely going to happen?  The problem here is not with the language itself, but rather with the <em>ecosystem</em>.  The &quot;Python Package Index&quot; has, amongst its package metadata, what version or versions of the language a package supports.  However, this metadata is <em>not required</em> and (to the author&#39;s knowledge) was only added <em>after</em> Python 3.0 became a concern.  As a result, it is entirely possible to accidentally install a package for the wrong version of the language.</p>
 
 <p>In addition, the 2.7/3.0 break caused problems for anyone attempting to <em>run</em> Python code.  In cases where scripts began with <code>#!/usr/bin/env python</code>, installing version 3.0 of Python could potentially break all existing Python scripts.  As a result, more (though not all!) developers started to use <code>#!/usr/bin/env python2</code> or <code>#!/usr/bin/env python3</code> as appropriate.  However, this <em>does not work on Windows</em>, which has no support for hashbangs.  Instead, the developers had to write and ship a custom launcher (<code>py</code>/<code>pyw</code>) which handled this for Windows users.</p>
 
@@ -547,7 +547,7 @@ release: 2.3.56
 
 <p>If the version attribute specifies a <em>compatible</em> version, then the compiler should do nothing.</p>
 
-<p>The justification for allowing the attribute in <em>all</em> positions is that it allows language version-specific additions to be localised upon introduction.  It also means that example code (such as might appear in the guides, tutorials, snippets, <em>etc.</em>) can accurately record its version requirements without having to always resort to a complete crate.</p>
+<p>The justification for allowing the attribute in <em>all</em> positions is that it allows language version-specific additions to be localised upon introduction.  It also means that <em>example code</em> (such as might appear in the guides, tutorials, snippets, <em>etc.</em>) can accurately record its version requirements without having to always resort to a complete crate.  Ensuring that documentation which contains code examples specify the version of <em>at least</em> one representative piece of code (such that it would be caught my simple copy and paste) could be encouraged as a social norm.</p>
 
 <p>If the compiler <em>does not</em> encounter any language version attributes, it should assume the code is compatible.  The reasoning for this choice is that if a new user comes to the language and tries to compile a &quot;Hello, World!&quot; program, or some other short, simple program, then having to also specify a language version (without knowing what version to specify) simply imposes an additional point of friction: another excuse to say &quot;this is too much trouble&quot;.</p>
 
@@ -585,7 +585,7 @@ warning: defaulting to current rustc version: `1.14.3`
 
 <ul>
 <li><p>Initially, <code>rust_ver</code> will <em>only</em> be valid when applied to a module as an inner attribute.  When <code>rust_ver</code> is encountered, the compiler should assert the specified version is compatible <em>immediately</em>.  This might be done by making the parser itself aware of what language version it should be parsing, with an &quot;ignore <code>rust_ver</code>&quot; setting to assist with external users (such as code formatting or completion).</p></li>
-<li><p>The above should be expanded to attributes in all contexts.  This may be more difficult, especially when macros are considered.</p></li>
+<li><p>The above should be expanded to attributes in all contexts.  This may be more difficult, especially when macros are considered.  Since this would permit <em>strictly</em> more code to be valid, it would be a backwards-compatible change and could be introduced as convenient.</p></li>
 </ul>
 
 <p>This would allow the compiler to report problems with incompatible source code <em>prior</em> to encountering a syntax error.</p>
@@ -602,11 +602,17 @@ warning: defaulting to current rustc version: `1.14.3`
                            href="#drawbacks">4 Drawbacks</a></h1>
 <p>This represents an additional &quot;hoop&quot; to jump through when contributing a new package to the ecosystem.  It also represents (for Cargo), additional work in the form of almost assured requests from users for them to &quot;do the right thing&quot; in selecting packages with supported language versions.</p>
 
+<p>Additionally, in the absence of a general &quot;early attribute processing&quot; system, this requires the parser to actively enforce the semantics of the <code>rust_ver</code> attribute.  Having such processing hard-wired into the parser is not ideal, from a &quot;separation of concerns&quot; perspective.</p>
+
+<p>If the &quot;language version gate&quot; idea is adopted, this likely means additional internal complexity in the compiler to define, check, and assert these gates, for every new feature introduced.</p>
+
 <h1 id="alternatives" class='section-header'><a
                            href="#alternatives">5 Alternatives</a></h1>
 <p>One alternative is to simply do nothing.  This will likely cause, at worst, minor discomfort to users, until a backward-incompatible version of the language comes into existence.  It should be noted that these changes would be <em>difficult to make at a later date</em>, since in order to be effective, all existing packages would have to be updated.  That said, provided there is sufficient time between implementation and the existence of a backward-incompatible version of Rust, any negative effects are likely to be minimal.</p>
 
-<p>A potential alternative to the simple <code>rust_ver</code> syntax would be to allow for more specific version specifications.  For example, <code>&quot;&gt;=1.3,&lt;1.3.78|&gt;=1.4&quot;</code> might be used to work around problems in specific versions.  However, this is really more appropriate for the <code>cfg</code> attribute.</p>
+<p>The package ecosystem concerns could also <em>potentially</em> be ameliorated prior to a backward-incompatible transition by tagging all existing packages with external metadata and requiring all new or updated packages to specify a version number.</p>
+
+<p>A potential alternative to the simple <code>rust_ver</code> syntax would be to allow for more specific version specifications.  For example, <code>&quot;1.3 .. 1.3.78, 1.4 ..&quot;</code> might be used to work around problems in specific versions.  However, this is really more appropriate for the <code>cfg</code> attribute.</p>
 
 <h1 id="unresolved-questions" class='section-header'><a
                            href="#unresolved-questions">6 Unresolved questions</a></h1>

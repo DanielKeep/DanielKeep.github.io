@@ -484,7 +484,7 @@ Finally, this design also leaves open the door for having multiple versions of `
 
 ## Why *Now*?
 
-One important question is: why not simply make these changes later, when Rust 2.0 is definitely going to happen?  The problem here is not with the language itself, but rather with the *ecosystem*.  The "Python Package Index" has, amongst its package metadata, what version or versions of the language a package supports.  However, this metadata is *not required* and was only added *after* Python 3.0 became a concern.  As a result, it is entirely possible to accidentally install a package for the wrong version of the language.
+One important question is: why not simply make these changes later, when Rust 2.0 is definitely going to happen?  The problem here is not with the language itself, but rather with the *ecosystem*.  The "Python Package Index" has, amongst its package metadata, what version or versions of the language a package supports.  However, this metadata is *not required* and (to the author's knowledge) was only added *after* Python 3.0 became a concern.  As a result, it is entirely possible to accidentally install a package for the wrong version of the language.
 
 In addition, the 2.7/3.0 break caused problems for anyone attempting to *run* Python code.  In cases where scripts began with `#!/usr/bin/env python`, installing version 3.0 of Python could potentially break all existing Python scripts.  As a result, more (though not all!) developers started to use `#!/usr/bin/env python2` or `#!/usr/bin/env python3` as appropriate.  However, this *does not work on Windows*, which has no support for hashbangs.  Instead, the developers had to write and ship a custom launcher (`py`/`pyw`) which handled this for Windows users.
 
@@ -517,7 +517,7 @@ It the compiler encounters a version attribute indicating a version which is *no
 
 If the version attribute specifies a *compatible* version, then the compiler should do nothing.
 
-The justification for allowing the attribute in *all* positions is that it allows language version-specific additions to be localised upon introduction.  It also means that example code (such as might appear in the guides, tutorials, snippets, *etc.*) can accurately record its version requirements without having to always resort to a complete crate.
+The justification for allowing the attribute in *all* positions is that it allows language version-specific additions to be localised upon introduction.  It also means that *example code* (such as might appear in the guides, tutorials, snippets, *etc.*) can accurately record its version requirements without having to always resort to a complete crate.  Ensuring that documentation which contains code examples specify the version of *at least* one representative piece of code (such that it would be caught my simple copy and paste) could be encouraged as a social norm.
 
 If the compiler *does not* encounter any language version attributes, it should assume the code is compatible.  The reasoning for this choice is that if a new user comes to the language and tries to compile a "Hello, World!" program, or some other short, simple program, then having to also specify a language version (without knowing what version to specify) simply imposes an additional point of friction: another excuse to say "this is too much trouble".
 
@@ -557,7 +557,7 @@ One issue with the `rust_ver` attribute is that the compiler will attempt to par
 
 - Initially, `rust_ver` will *only* be valid when applied to a module as an inner attribute.  When `rust_ver` is encountered, the compiler should assert the specified version is compatible *immediately*.  This might be done by making the parser itself aware of what language version it should be parsing, with an "ignore `rust_ver`" setting to assist with external users (such as code formatting or completion).
 
-- The above should be expanded to attributes in all contexts.  This may be more difficult, especially when macros are considered.
+- The above should be expanded to attributes in all contexts.  This may be more difficult, especially when macros are considered.  Since this would permit *strictly* more code to be valid, it would be a backwards-compatible change and could be introduced as convenient.
 
 This would allow the compiler to report problems with incompatible source code *prior* to encountering a syntax error.
 
@@ -573,11 +573,17 @@ However, this is not needed for this RFC and should be specified independently, 
 
 This represents an additional "hoop" to jump through when contributing a new package to the ecosystem.  It also represents (for Cargo), additional work in the form of almost assured requests from users for them to "do the right thing" in selecting packages with supported language versions.
 
+Additionally, in the absence of a general "early attribute processing" system, this requires the parser to actively enforce the semantics of the `rust_ver` attribute.  Having such processing hard-wired into the parser is not ideal, from a "separation of concerns" perspective.
+
+If the "language version gate" idea is adopted, this likely means additional internal complexity in the compiler to define, check, and assert these gates, for every new feature introduced.
+
 # Alternatives
 
 One alternative is to simply do nothing.  This will likely cause, at worst, minor discomfort to users, until a backward-incompatible version of the language comes into existence.  It should be noted that these changes would be *difficult to make at a later date*, since in order to be effective, all existing packages would have to be updated.  That said, provided there is sufficient time between implementation and the existence of a backward-incompatible version of Rust, any negative effects are likely to be minimal.
 
-A potential alternative to the simple `rust_ver` syntax would be to allow for more specific version specifications.  For example, `">=1.3,<1.3.78|>=1.4"` might be used to work around problems in specific versions.  However, this is really more appropriate for the `cfg` attribute.
+The package ecosystem concerns could also *potentially* be ameliorated prior to a backward-incompatible transition by tagging all existing packages with external metadata and requiring all new or updated packages to specify a version number.
+
+A potential alternative to the simple `rust_ver` syntax would be to allow for more specific version specifications.  For example, `"1.3 .. 1.3.78, 1.4 .."` might be used to work around problems in specific versions.  However, this is really more appropriate for the `cfg` attribute.
 
 # Unresolved questions
 
