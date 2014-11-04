@@ -370,6 +370,7 @@
 - Start Date: 2014-11-04
 - RFC PR: (leave this empty)
 - Rust Issue: (leave this empty)
+- Latest Version: https://danielkeep.github.io/0000-rust-ver-attr.html
 
 # Summary
 
