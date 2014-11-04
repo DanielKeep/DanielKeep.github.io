@@ -19,7 +19,8 @@
     
     <h1 class="title">RFC: Rust Version Attribute</h1>
     <nav id="TOC"><ul>
-<li><a href="#summary">1 Summary</a><ul></ul></li>
+<li><a href="#summary">1 Summary</a><ul>
+<li><a href="#context">1.1 Context</a><ul></ul></li></ul></li>
 <li><a href="#motivation">2 Motivation</a><ul>
 <li><a href="#clearer-errors-and-advice">2.1 Clearer Errors and Advice</a><ul></ul></li>
 <li><a href="#package-ecosystem-support">2.2 Package Ecosystem Support</a><ul></ul></li>
@@ -407,6 +408,13 @@
 <h1 id="summary" class='section-header'><a
                            href="#summary">1 Summary</a></h1>
 <p>This RFC proposes adding a <code>#![rust_ver=&quot;...&quot;]</code> attribute and <code>--rust-ver</code> compiler flag.</p>
+
+<h2 id="context" class='section-header'><a
+                           href="#context">1.1 Context</a></h2>
+<ul>
+<li><a href="https://github.com/rust-lang/rust/issues/3392">Issue #3392: language version markers</a> (Open).</li>
+<li><a href="https://github.com/rust-lang/rust/issues/3795">Issue #3795: Need a mechanism to write rust-version-specific code</a> (Open).</li>
+</ul>
 
 <h1 id="motivation" class='section-header'><a
                            href="#motivation">2 Motivation</a></h1>

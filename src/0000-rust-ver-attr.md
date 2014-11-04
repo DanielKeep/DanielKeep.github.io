@@ -375,6 +375,11 @@
 
 This RFC proposes adding a `#![rust_ver="..."]` attribute and `--rust-ver` compiler flag.
 
+## Context
+
+- [Issue #3392: language version markers](https://github.com/rust-lang/rust/issues/3392) (Open).
+- [Issue #3795: Need a mechanism to write rust-version-specific code](https://github.com/rust-lang/rust/issues/3795) (Open).
+
 # Motivation
 
 **TODO**: Clearly break this into "benefits of the now" and "potential benefits in the future".
