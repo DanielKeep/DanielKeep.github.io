@@ -473,7 +473,7 @@ error: aborting due to previous error
 
 However, how long will this error continue to exist?  This also means the compiler has to keep *parsing* obsolete, invalid syntax.  Consider a hypothetical version 2.0 of rust; with enough changes, it may simply be infeasible to support errors on every construct that has changed or been removed.  Worse, it may not be possible to syntactically distinguish between 1.x and 2.x code that has changed meaning.
 
-A `rust_lang` attribute provides a simple way to provide more accurate information to the user.
+A `rust_ver` attribute provides a simple way to provide more accurate information to the user.
 
 This could also work with `cfg` attributes (assuming they are processed *prior* to parsing modules; see "Aside: Improving `cfg`" below) to allow libraries to phase in support for new features without breaking backward compatibility.
 
@@ -552,7 +552,7 @@ It is unclear how much effort implementing these errors *comprehensively* would 
 
 One issue with the `rust_ver` attribute is that the compiler will attempt to parse the entire source *before* examining attributes.  As such, the RFC proposes the following two-stage implementation:
 
-- Initially, `rust_ver` will *only* be valid when applied to a module as an inner attribute.  When `rust_ver` is encountered, the compiler should assert the specified version is compatible *immediately*.  This might be done by making the parser itself aware of what language version it should be parsing, with an "ignore `rust_vec`" setting to assist with external users (such as code formatting or completion).
+- Initially, `rust_ver` will *only* be valid when applied to a module as an inner attribute.  When `rust_ver` is encountered, the compiler should assert the specified version is compatible *immediately*.  This might be done by making the parser itself aware of what language version it should be parsing, with an "ignore `rust_ver`" setting to assist with external users (such as code formatting or completion).
 
 - The above should be expanded to attributes in all contexts.  This may be more difficult, especially when macros are considered.
 

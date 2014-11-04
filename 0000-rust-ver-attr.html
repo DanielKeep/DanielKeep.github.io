@@ -502,7 +502,7 @@ error: aborting due to previous error
 
 <p>However, how long will this error continue to exist?  This also means the compiler has to keep <em>parsing</em> obsolete, invalid syntax.  Consider a hypothetical version 2.0 of rust; with enough changes, it may simply be infeasible to support errors on every construct that has changed or been removed.  Worse, it may not be possible to syntactically distinguish between 1.x and 2.x code that has changed meaning.</p>
 
-<p>A <code>rust_lang</code> attribute provides a simple way to provide more accurate information to the user.</p>
+<p>A <code>rust_ver</code> attribute provides a simple way to provide more accurate information to the user.</p>
 
 <p>This could also work with <code>cfg</code> attributes (assuming they are processed <em>prior</em> to parsing modules; see &quot;Aside: Improving <code>cfg</code>&quot; below) to allow libraries to phase in support for new features without breaking backward compatibility.</p>
 
@@ -578,7 +578,7 @@ warning: defaulting to current rustc version: `1.14.3`
 <p>One issue with the <code>rust_ver</code> attribute is that the compiler will attempt to parse the entire source <em>before</em> examining attributes.  As such, the RFC proposes the following two-stage implementation:</p>
 
 <ul>
-<li><p>Initially, <code>rust_ver</code> will <em>only</em> be valid when applied to a module as an inner attribute.  When <code>rust_ver</code> is encountered, the compiler should assert the specified version is compatible <em>immediately</em>.  This might be done by making the parser itself aware of what language version it should be parsing, with an &quot;ignore <code>rust_vec</code>&quot; setting to assist with external users (such as code formatting or completion).</p></li>
+<li><p>Initially, <code>rust_ver</code> will <em>only</em> be valid when applied to a module as an inner attribute.  When <code>rust_ver</code> is encountered, the compiler should assert the specified version is compatible <em>immediately</em>.  This might be done by making the parser itself aware of what language version it should be parsing, with an &quot;ignore <code>rust_ver</code>&quot; setting to assist with external users (such as code formatting or completion).</p></li>
 <li><p>The above should be expanded to attributes in all contexts.  This may be more difficult, especially when macros are considered.</p></li>
 </ul>
 
