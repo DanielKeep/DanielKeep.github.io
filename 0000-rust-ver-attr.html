@@ -430,12 +430,12 @@
                            href="#clearer-errors-and-advice">2.1 Clearer Errors and Advice</a></h2>
 <p>Consider what would happen if a user of the current version of <code>rustc</code> were to try and compile a source file from Rust 1.8 with its amazing support for numbers with units:</p>
 
-<pre><code class="language-shell">&gt; type .\unit_test.rs
+<pre><code class="language-shell">&gt; type unit_test.rs
 fn main() {
     let x = 42.0_m;
     println!(&quot;{}&quot;, x);
 }
-&gt; rustc .\unit_test.rs
+&gt; rustc unit_test.rs
 unit_test.rs:2:18: 2:19 error: expected `;`, found `m`
 unit_test.rs:2     let x = 42.0_m;
                                 ^
@@ -443,13 +443,13 @@ unit_test.rs:2     let x = 42.0_m;
 
 <p>It&#39;s not clear whether this is unsupported syntax or a typo that made its way into the code (unlikely, but possible), and it&#39;s not clear what the solution is.  Now, consider what the compiler could tell the user if the code itself contained version information:</p>
 
-<pre><code class="language-shell">&gt; type .\unit_test_ver.rs
+<pre><code class="language-shell">&gt; type unit_test_ver.rs
 #![rust_ver=&quot;1.8&quot;]
 fn main() {
     let x = 42.0_m;
     println!(&quot;{}&quot;, x);
 }
-&gt; rustc .\unit_test_ver.rs
+&gt; rustc unit_test_ver.rs
 unit_test.rs:1:1: 1:19 error: unsupported version of the Rust language required.
 unit_test.rs:1 #![rust_ver=&quot;1.8&quot;]
                ^~~~~~~~~~~~~~~~~~
@@ -492,12 +492,12 @@ SyntaxError: invalid syntax
 
 <p>Rust, at present, does somewhat better than this.  For example, with a recent <code>rustc</code>:</p>
 
-<pre><code class="language-shell">&gt; type .\tilde_test.rs
+<pre><code class="language-shell">&gt; type tilde_test.rs
 fn main() {
     let x = ~42;
     println!(&quot;{}&quot;, x);
 }
-&gt; rustc .\tilde_test.rs
+&gt; rustc tilde_test.rs
 tilde_test.rs:2:13: 2:14 error: obsolete syntax: `~` notation for owned pointer
 allocation
 tilde_test.rs:2     let x = ~42;

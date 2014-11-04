@@ -393,12 +393,12 @@ There are several major motivations for this addition:
 Consider what would happen if a user of the current version of `rustc` were to try and compile a source file from Rust 1.8 with its amazing support for numbers with units:
 
 ```shell
-> type .\unit_test.rs
+> type unit_test.rs
 fn main() {
     let x = 42.0_m;
     println!("{}", x);
 }
-> rustc .\unit_test.rs
+> rustc unit_test.rs
 unit_test.rs:2:18: 2:19 error: expected `;`, found `m`
 unit_test.rs:2     let x = 42.0_m;
                                 ^
@@ -407,13 +407,13 @@ unit_test.rs:2     let x = 42.0_m;
 It's not clear whether this is unsupported syntax or a typo that made its way into the code (unlikely, but possible), and it's not clear what the solution is.  Now, consider what the compiler could tell the user if the code itself contained version information:
 
 ```shell
-> type .\unit_test_ver.rs
+> type unit_test_ver.rs
 #![rust_ver="1.8"]
 fn main() {
     let x = 42.0_m;
     println!("{}", x);
 }
-> rustc .\unit_test_ver.rs
+> rustc unit_test_ver.rs
 unit_test.rs:1:1: 1:19 error: unsupported version of the Rust language required.
 unit_test.rs:1 #![rust_ver="1.8"]
                ^~~~~~~~~~~~~~~~~~
@@ -460,12 +460,12 @@ Is it the string literal that's the problem, the `!` in the string, or the `prin
 Rust, at present, does somewhat better than this.  For example, with a recent `rustc`:
 
 ```shell
-> type .\tilde_test.rs
+> type tilde_test.rs
 fn main() {
     let x = ~42;
     println!("{}", x);
 }
-> rustc .\tilde_test.rs
+> rustc tilde_test.rs
 tilde_test.rs:2:13: 2:14 error: obsolete syntax: `~` notation for owned pointer
 allocation
 tilde_test.rs:2     let x = ~42;
