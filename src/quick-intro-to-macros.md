@@ -1,5 +1,7 @@
 % A Quick Intro to Rust Macros
 
+<!-- DO-NOT-TEST -->
+
 <style type="text/css">
     /**
      * Copyright 2013 The Rust Project Developers. See the COPYRIGHT
@@ -435,6 +437,10 @@
         margin-left: 0.22222em;
     }
 </style>
+
+> **Note**: This article is for an obsolete version of Rust, and has been superceded by the slightly less misleadingly named ["A Practical Intro to Macros in Rust 1.0"](https://danielkeep.github.io/practical-intro-to-macros.html).
+
+<p></p>
 
 > **Note**: This article exists as an additional resource for learning about macros in Rust.  There is also the [official Rust Macros Guide](http://doc.rust-lang.org/guide-macros.html).
 

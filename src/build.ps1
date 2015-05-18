@@ -1,10 +1,14 @@
 function BuildWith-Rustdoc($Src, $Dst)
 {
-    $out = rustdoc "$Src" --test
-    if($LastExitCode -ne 0) {
-        $out | Write-Host
-        Write-Host "$Src failed tests." -ForegroundColor Red
-        return
+    if(-not (Get-Content "$Src" | Select -First 10 | Select-String "DO-NOT-TEST")) {
+        $out = rustdoc "$Src" --test
+        if($LastExitCode -ne 0) {
+            $out | Write-Host
+            Write-Host "$Src failed tests." -ForegroundColor Red
+            return
+        }
+    } else {
+        Write-Host "$($Src): skipping tests." -ForegroundColor Yellow
     }
 
     if(-not (Test-Path .tmp)) { mkdir .tmp > $null }

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
     <title>A Quick Intro to Rust Macros</title>
 
@@ -27,7 +28,9 @@
 <li><a href="#the-nuclear-option">4 The Nuclear Option</a><ul></ul></li>
 <li><a href="#some-more-gotchas">5 Some More Gotchas</a><ul></ul></li>
 <li><a href="#distribution">6 Distribution</a><ul></ul></li>
-<li><a href="#postscript">7 Postscript</a><ul></ul></li></ul></nav><style type="text/css">
+<li><a href="#postscript">7 Postscript</a><ul></ul></li></ul></nav><!-- DO-NOT-TEST -->
+
+<style type="text/css">
     /**
      * Copyright 2013 The Rust Project Developers. See the COPYRIGHT
      * file at the top-level directory of this distribution and at
@@ -464,6 +467,12 @@
 </style>
 
 <blockquote>
+<p><strong>Note</strong>: This article is for an obsolete version of Rust, and has been superceded by the slightly less misleadingly named <a href="https://danielkeep.github.io/practical-intro-to-macros.html">&quot;A Practical Intro to Macros in Rust 1.0&quot;</a>.</p>
+</blockquote>
+
+<p></p>
+
+<blockquote>
 <p><strong>Note</strong>: This article exists as an additional resource for learning about macros in Rust.  There is also the <a href="http://doc.rust-lang.org/guide-macros.html">official Rust Macros Guide</a>.</p>
 </blockquote>
 
@@ -472,7 +481,7 @@
 <p>I&#39;ve become quite enamoured with Rust lately, due in no small part to its interesting macro system.  On a whim the other night, I decided to see about duplicating the functionality of D&#39;s <code>std.range.recurrence</code> function in Rust.  I was rather chuffed with the result, and thought that it might serve as a nice little, non-trivial example of how to construct macros in Rust.</p>
 
 <p>The TLDR of this article, then, is that we will construct a macro that lets us easily define recurrence relation iterators in Rust, with the following syntax:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> <span class='macro'>recurrence</span><span class='macro'>!</span>(<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>]);
 
 <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='ident'>fib</span>.<span class='ident'>take</span>(<span class='number'>10</span>) { <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>) }
@@ -504,7 +513,7 @@ foreach (e; take(fib, 10)) { writeln(e); }
 <p>A macro invocation in Rust is, in contrast to something like C, not a wholly separate pass over the source code.  Macro invocations are actually a normal part of the compiler&#39;s AST representation.  This means that invocations can <em>only</em> appear in positions where they&#39;re explicitly supported.  Currently, they can appear in place of items, methods, statements, expressions, and patterns.  Note that, as a consequence of this, there are some things you can&#39;t do with macros, such as generate the identifier for a function declaration.</p>
 
 <p>However, the status of macro invocations as first-class members of the AST means that the Rust parser has to be able to parse them into something sensible, even when they use syntax that Rust itself doesn&#39;t support.  The way this is done is by parsing the contents of an invocation into &quot;token trees&quot;.  If we take the <code>fib</code> example above, given the invocation:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>recurrence</span><span class='macro'>!</span>(<span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>, <span class='number'>1</span> ... <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>])
 </pre>
 
@@ -525,7 +534,7 @@ foreach (e; take(fib, 10)) { writeln(e); }
 <h1 id="construction" class='section-header'><a
                            href="#construction">2 Construction</a></h1>
 <p>Usually, when working on a new macro, the first thing I do is decide what the macro invocation should look like.  In this specific case, my first attempt looked like this:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='comment'>/*
 let fib = recurrence![a[n] = 0, 1, ..., a[n-1] + a[n-2]];
 
@@ -534,7 +543,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 </pre>
 
 <p>From that, we can take a stab at how the macro should be defined, even if we aren&#39;t sure of the actual expansion.  This is useful because if you can&#39;t figure out how to parse the input syntax, then <em>maybe</em> you need to change it.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>recurrence</span> {
     ( <span class='ident'>a</span>[<span class='ident'>n</span>] <span class='op'>=</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>:<span class='ident'>expr</span>),<span class='op'>+</span> , ... , <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>recur</span>:<span class='ident'>expr</span> ) <span class='op'>=&gt;</span> { <span class='comment'>/* ... */</span> };
 }
@@ -677,7 +686,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 </table>
 
 <p>Now, let&#39;s begin writing the final, fully expanded form.  For this expansion, I was looking for something like:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> {
     <span class='kw'>struct</span> <span class='ident'>Recurrence</span> {
         <span class='ident'>mem</span>: [<span class='ident'>u64</span>, ..<span class='number'>2</span>],
@@ -690,7 +699,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 <blockquote>
 <p><strong>Aside</strong>: I&#39;ve chosen <code>u64</code> as a &quot;sufficiently large&quot; type for the elements of this sequence.  Don&#39;t worry about how this will work out for <em>other</em> sequences; we&#39;ll come to it.</p>
 </blockquote>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
     <span class='kw'>impl</span> <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
         <span class='attribute'>#[<span class='ident'>inline</span>]</span>
         <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
@@ -701,7 +710,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 </pre>
 
 <p>We need a branch to yield the initial values of the sequence; nothing tricky.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
             } <span class='kw'>else</span> {
                 <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='comment'>/* something */</span>;
                 <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pos</span>;
@@ -717,7 +726,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 </pre>
 
 <p>This is a bit harder; we&#39;ll come back and look at <em>how</em> exactly to define <code>a</code>.  Also, <code>TODO_shuffle_down_and_append</code> is another placeholder; I want something that places <code>next_val</code> on the end of the array, shuffling the rest down by one space, dropping the 0th element.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 
     <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>0</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
 };
@@ -726,7 +735,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 </pre>
 
 <p>Lastly, return an instance of our new structure, which can then be iterated over.  The complete expansion is:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='kw'>let</span> <span class='ident'>fib</span> <span class='op'>=</span> {
     <span class='kw'>struct</span> <span class='ident'>Recurrence</span> {
         <span class='ident'>mem</span>: [<span class='ident'>u64</span>, ..<span class='number'>2</span>],
@@ -764,7 +773,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 </blockquote>
 
 <p>It&#39;s also useful to check your expansion as you&#39;re writing it.  If you see anything in the expansion that needs to vary with the invocation, but <em>isn&#39;t</em> in the actual macro syntax, you should work out where to introduce it.  In this case, we&#39;ve added <code>u64</code>, but that&#39;s not neccesarily what the user wants, nor is it in the macro syntax.  So let&#39;s fix that.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>recurrence</span> {
     ( <span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>:<span class='ident'>ty</span> <span class='op'>=</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>:<span class='ident'>expr</span>),<span class='op'>+</span> , ... , <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>recur</span>:<span class='ident'>expr</span> ) <span class='op'>=&gt;</span> { <span class='comment'>/* ... */</span> };
 }
@@ -801,7 +810,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 <p>I will skim a bit over this part, since it&#39;s effectively tangential to the macro stuff.  We want to make it so that whatever <code>a</code> is, we can index it directly, and it will act as a sliding window keeping the last few (in this case, 2) elements of the sequence.</p>
 
 <p>We can do this pretty easily with a wrapper type:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='kw'>struct</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>u64</span>, ..<span class='number'>2</span>],
     <span class='ident'>offset</span>: <span class='ident'>uint</span>,
@@ -823,12 +832,12 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 </blockquote>
 
 <p>This changes the definition of <code>a</code> to:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>IndexOffset</span> { <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>mem</span>, <span class='ident'>offset</span>: <span class='ident'>n</span> };
 </pre>
 
 <p>The only remaining question is what to do about <code>TODO_shuffle_down_and_append</code>.  I wasn&#39;t able to find a method in the standard library with exactly the semantics I wanted, but it isn&#39;t hard to do by hand.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 {
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>swap</span>;
 
@@ -846,7 +855,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 </blockquote>
 
 <p>The complete expansion now looks like this:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>recurrence</span> {
@@ -933,7 +942,7 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 </code></pre>
 
 <p>Success!  Now, let&#39;s copy &amp; paste this into the macro expansion, and replace the expanded code with an invocation.  This gives us:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>recurrence</span> {
@@ -1006,7 +1015,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 </code></pre>
 
 <p>Here, we&#39;ve run into a limitation of <code>macro_rules</code>.  The problem is that second comma.  When it sees it during expansion, <code>macro_rules</code> can&#39;t decide if it&#39;s supposed to parse <em>another</em> expression for <code>inits</code>, or <code>...</code>.  Sadly, it isn&#39;t quite clever enough to realise that <code>...</code> isn&#39;t a valid expression, so it gives up.  Theoretically, this <em>should</em> work as desired, but currently doesn&#39;t.  Thankfully, the fix is relatively simple: we remove the comma from the syntax.  To keep things balanced, we&#39;ll remove <em>both</em> commas around <code>...</code>:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>recurrence</span> {
@@ -1027,7 +1036,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 <h2 id="substitution" class='section-header'><a
                            href="#substitution">3.1 Substitution</a></h2>
 <p>Substituting something you&#39;ve captured in a macro is quite simple; you can insert the contents of a capture <code>$sty:ty</code> by using <code>$sty</code>.  So, let&#39;s go through and fix the <code>u64</code>s (look for <code>$sty</code>):</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>recurrence</span> {
@@ -1071,21 +1080,21 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 </pre>
 
 <p>Let&#39;s tackle a harder one: how to turn <code>inits</code> into both the array literal <code>[0, 1]</code> <em>and</em> the array type, <code>[$sty, ..2]</code>.  The first one we can do like so:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
             <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
 </pre>
 
 <p>This effectively does the opposite of the capture: repeat <code>inits</code> one or more times, separating each with a comma.  This expands to the expected sequence of tokens: <code>0, 1</code>.</p>
 
 <p>Somehow turning <code>inits</code> into a literal <code>2</code> is a little trickier.  It turns out that there&#39;s no direct way to do this, but we <em>can</em> do it by using a second macro.  Let&#39;s take this one step at a time.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     <span class='comment'>/* ??? */</span>
 }
 </pre>
 
-<p>The obvious case is: given zero expressions (which looks like this: <code></code>), you would expect <code>count_exprs</code> to expand to a literal <code>0</code>.</p>
-<pre class='rust '>
+<p>The obvious case is: given zero expressions (which looks like this: <code></code>` <code>), you would expect</code>count_exprs<code>to expand to a literal</code>0`.</p>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     () <span class='op'>=&gt;</span> (<span class='number'>0</span>)
 }
@@ -1096,7 +1105,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 </blockquote>
 
 <p>What if you have <em>one</em> expression?  That should be a literal <code>1</code>.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     () <span class='op'>=&gt;</span> (<span class='number'>0</span>);
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> (<span class='number'>1</span>);
@@ -1104,7 +1113,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 </pre>
 
 <p>Two?</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     () <span class='op'>=&gt;</span> (<span class='number'>0</span>);
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> (<span class='number'>1</span>);
@@ -1113,7 +1122,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 </pre>
 
 <p>We can &quot;simplify&quot; this a little by re-expressing the case of two expressions recursively.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     () <span class='op'>=&gt;</span> (<span class='number'>0</span>);
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> (<span class='number'>1</span>);
@@ -1122,7 +1131,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 </pre>
 
 <p>This is fine since Rust can fold <code>1 + 1</code> into a constant value.  What if we have three expressions?</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     () <span class='op'>=&gt;</span> (<span class='number'>0</span>);
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> (<span class='number'>1</span>);
@@ -1132,7 +1141,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 </pre>
 
 <p>Hopefully, you can see the pattern here.  We can always reduce the list of expressions by matching one expression, followed by zero or more expressions, expanding that into 1 + a count.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     () <span class='op'>=&gt;</span> (<span class='number'>0</span>);
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>head</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> (<span class='number'>1</span>);
@@ -1141,7 +1150,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 </pre>
 
 <p>In fact, we can remove one more rule by changing the repetition slightly.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     () <span class='op'>=&gt;</span> (<span class='number'>0</span>);
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>head</span>:<span class='ident'>expr</span> $(, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>:<span class='ident'>expr</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> (<span class='number'>1</span> <span class='op'>+</span> <span class='macro'>count_exprs</span><span class='macro'>!</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>),<span class='op'>*</span>));
@@ -1153,7 +1162,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 <blockquote>
 <p><strong>Note</strong>: The lexical ordering of <code>count_exprs</code> and <code>recurrence</code> is important.  This will be expounded upon at the end.</p>
 </blockquote>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
     () <span class='op'>=&gt;</span> (<span class='number'>0</span>);
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>head</span>:<span class='ident'>expr</span> $(, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>:<span class='ident'>expr</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> (<span class='number'>1</span> <span class='op'>+</span> <span class='macro'>count_exprs</span><span class='macro'>!</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>),<span class='op'>*</span>));
@@ -1214,7 +1223,7 @@ recurrence.rs:61     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
 </pre>
 
 <p>With that done, we can now substitute the last thing: the <code>recur</code> expression.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='kw'>let</span> <span class='ident'>next_val</span> <span class='op'>=</span> {
     <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>pos</span>;
     <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>IndexOffset</span> { <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>mem</span>, <span class='ident'>offset</span>: <span class='ident'>n</span> };
@@ -1252,7 +1261,7 @@ recurrence.rs:68:15: 68:65 note: expansion site
 </code></pre>
 
 <p>The <code>--pretty expanded</code> argument tells <code>rustc</code> to perform macro expansion, then turn the resulting AST back into source code.  <code>--no-analysis</code> tells it to <em>not</em> do type- and borrow-checking.  The output is:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>phase</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>no_std</span>]</span>
@@ -1335,7 +1344,7 @@ recurrence.rs:68:15: 68:65 note: expansion site
 <h2 id="being-hygienic" class='section-header'><a
                            href="#being-hygienic">3.2 Being Hygienic</a></h2>
 <p>The issue here is that identifiers in Rust macros are <em>hygienic</em>.  That is, identifiers from two different contexts <em>cannot</em> collide.  To show the difference, let&#39;s take a simpler example.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>using_a</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> {
         {
@@ -1419,7 +1428,7 @@ let four = </span><span class="sc-1">{
 </pre>
 
 <p>Now, the contexts match, and the code will compile.  We can make this adjustment to our <code>recurrence</code> macro by explicitly capturing <code>a</code> and <code>n</code>.  After making the necessary changes, we have:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>count_exprs</span> {
@@ -1492,7 +1501,7 @@ let four = </span><span class="sc-1">{
 </pre>
 
 <p>And it compiles!  Now, let&#39;s try with a different sequence.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='kw'>for</span> <span class='ident'>e</span> <span class='kw'>in</span> <span class='macro'>recurrence</span><span class='macro'>!</span>(<span class='ident'>f</span>[<span class='ident'>i</span>]: <span class='ident'>f64</span> <span class='op'>=</span> <span class='number'>1.0</span> ... <span class='ident'>f</span>[<span class='ident'>i</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>*</span> <span class='ident'>i</span> <span class='kw'>as</span> <span class='ident'>f64</span>).<span class='ident'>take</span>(<span class='number'>10</span>) {
     <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>)
 }
@@ -1591,7 +1600,7 @@ macro_rules! X { () => ("X") }
 <p>Note that the definition of <code>X</code> cuts clear through the module heirarchy and across files.  For this reason, I personally recommend that you always define macros in the <em>first</em> module defined in a library, or at the top of your <code>lib.rs</code> or <code>main.rs</code> file.</p>
 
 <p><strong>Macros are individually exported.</strong> In order to make a macro available to other crates, you have to use the <code>#[macro_export]</code> attribute.  Note that this and <code>#[macro_escape]</code> are <em>unrelated</em>.  You can have a macro exported to other crates, but which is not available to most of your own crate.  So, for example:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>X</span> { () <span class='op'>=&gt;</span> (<span class='string'>&quot;X&quot;</span>) }
 </pre>
@@ -1631,7 +1640,7 @@ plugin = true
 </code></pre>
 
 <p>The really important part is <code>plugin = true</code>.  This tells Cargo that it needs to make the compiled crate available to the compiler.  Next, we&#39;ll fill out <code>lib.rs</code>:</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='doccomment'>//! This crate defines a macro for creating iterators which implement</span>
 <span class='doccomment'>//! recurrence relations.</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>macro_rules</span>)]</span>
@@ -1741,7 +1750,7 @@ git = &quot;https://gist.github.com/759ee2f732ecd98cc62e.git&quot;
 </code></pre>
 
 <p>...and put the code in <code>main.rs</code>.</p>
-<pre class='rust '>
+<pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>phase</span>)]</span>
 
 <span class='attribute'>#[<span class='ident'>phase</span>(<span class='ident'>plugin</span>)]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>recurrence</span>;
