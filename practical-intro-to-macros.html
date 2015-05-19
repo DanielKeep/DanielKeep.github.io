@@ -843,8 +843,14 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
 
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>u64</span> {
-        <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>index</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>offset</span> <span class='op'>+</span> <span class='number'>2</span>;
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>]
+        <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Wrapping</span>;
+        
+        <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>index</span>);
+        <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='self'>self</span>.<span class='ident'>offset</span>);
+        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='number'>2</span>);
+        
+        <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='ident'>index</span> <span class='op'>-</span> <span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>window</span>;
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>.<span class='number'>0</span>]
     }
 }
 </pre>
