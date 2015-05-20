@@ -844,11 +844,11 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>u64</span> {
         <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Wrapping</span>;
-        
+
         <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>index</span>);
         <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='self'>self</span>.<span class='ident'>offset</span>);
         <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='number'>2</span>);
-        
+
         <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='ident'>index</span> <span class='op'>-</span> <span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>window</span>;
         <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>.<span class='number'>0</span>]
     }
@@ -915,11 +915,11 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
             <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
             <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>u64</span> {
                 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Wrapping</span>;
-                
+
                 <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>index</span>);
                 <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='self'>self</span>.<span class='ident'>offset</span>);
                 <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='number'>2</span>);
-                
+
                 <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='ident'>index</span> <span class='op'>-</span> <span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>window</span>;
                 <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>.<span class='number'>0</span>]
             }
@@ -992,36 +992,36 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
             */</span>
 
             <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Index</span>;
-    
+
             <span class='kw'>struct</span> <span class='ident'>Recurrence</span> {
                 <span class='ident'>mem</span>: [<span class='ident'>u64</span>; <span class='number'>2</span>],
                 <span class='ident'>pos</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>struct</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>u64</span>; <span class='number'>2</span>],
                 <span class='ident'>offset</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>u64</span>;
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
                 <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>u64</span> {
                     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Wrapping</span>;
-                    
+
                     <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>index</span>);
                     <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='self'>self</span>.<span class='ident'>offset</span>);
                     <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='number'>2</span>);
-                    
+
                     <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='ident'>index</span> <span class='op'>-</span> <span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>window</span>;
                     <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>.<span class='number'>0</span>]
                 }
             }
-    
+
             <span class='kw'>impl</span> <span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
                 <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='ident'>u64</span>;
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='number'>2</span> {
@@ -1034,22 +1034,22 @@ for e in fib.take(10) { println!(&quot;{}&quot;, e) }
                             <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>IndexOffset</span> { <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>mem</span>, <span class='ident'>offset</span>: <span class='ident'>n</span> };
                             (<span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>])
                         };
-    
+
                         {
                             <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>swap</span>;
-    
+
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span> <span class='op'>=</span> <span class='ident'>next_val</span>;
                             <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='number'>2</span>).<span class='ident'>rev</span>() {
                                 <span class='ident'>swap</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span>]);
                             }
                         }
-    
+
                         <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='number'>1</span>;
                         <span class='prelude-val'>Some</span>(<span class='ident'>next_val</span>)
                     }
                 }
             }
-    
+
             <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>0</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
         }
     };
@@ -1104,48 +1104,48 @@ recurrence.rs:69     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
     ( <span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>:<span class='ident'>ty</span> <span class='op'>=</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>:<span class='ident'>expr</span>),<span class='op'>+</span> ... <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>recur</span>:<span class='ident'>expr</span> ) <span class='op'>=&gt;</span> {
         {
             <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Index</span>;
-    
+
             <span class='kw'>struct</span> <span class='ident'>Recurrence</span> {
                 <span class='ident'>mem</span>: [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>; <span class='number'>2</span>],
 <span class='comment'>//                    ^~~~ changed</span>
                 <span class='ident'>pos</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>struct</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>; <span class='number'>2</span>],
 <span class='comment'>//                          ^~~~ changed</span>
                 <span class='ident'>offset</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>;
 <span class='comment'>//                            ^~~~ changed</span>
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
                 <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span> {
 <span class='comment'>//                                                          ^~~~ changed</span>
                     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Wrapping</span>;
-                    
+
                     <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>index</span>);
                     <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='self'>self</span>.<span class='ident'>offset</span>);
                     <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='number'>2</span>);
-                    
+
                     <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='ident'>index</span> <span class='op'>-</span> <span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>window</span>;
                     <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>.<span class='number'>0</span>]
                 }
             }
-    
+
             <span class='kw'>impl</span> <span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
                 <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>;
 <span class='comment'>//                          ^~~~ changed</span>
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> {
 <span class='comment'>//                                           ^~~~ changed</span>
                     <span class='comment'>/* ... */</span>
                 }
             }
-    
+
             <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [<span class='number'>1</span>, <span class='number'>1</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
         }
     };
@@ -1258,42 +1258,42 @@ recurrence.rs:69     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
     ( <span class='ident'>a</span>[<span class='ident'>n</span>]: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>:<span class='ident'>ty</span> <span class='op'>=</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>:<span class='ident'>expr</span>),<span class='op'>+</span> ... <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>recur</span>:<span class='ident'>expr</span> ) <span class='op'>=&gt;</span> {
         {
             <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Index</span>;
-            
+
             <span class='kw'>const</span> <span class='ident'>MEM_SIZE</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='macro'>count_exprs</span><span class='macro'>!</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>);
 <span class='comment'>//          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ added</span>
-    
+
             <span class='kw'>struct</span> <span class='ident'>Recurrence</span> {
                 <span class='ident'>mem</span>: [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>; <span class='ident'>MEM_SIZE</span>],
 <span class='comment'>//                          ^~~~~~~~ changed</span>
                 <span class='ident'>pos</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>struct</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>; <span class='ident'>MEM_SIZE</span>],
 <span class='comment'>//                                ^~~~~~~~ changed</span>
                 <span class='ident'>offset</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>;
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
                 <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span> {
                     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Wrapping</span>;
-                    
+
                     <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>index</span>);
                     <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='self'>self</span>.<span class='ident'>offset</span>);
                     <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>MEM_SIZE</span>);
 <span class='comment'>//                                        ^~~~~~~~ changed</span>
-                    
+
                     <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='ident'>index</span> <span class='op'>-</span> <span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>window</span>;
                     <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>.<span class='number'>0</span>]
                 }
             }
-    
+
             <span class='kw'>impl</span> <span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
                 <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>;
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>MEM_SIZE</span> {
@@ -1307,23 +1307,23 @@ recurrence.rs:69     let fib = recurrence![a[n]: u64 = 0, 1, ..., a[n-1] + a[n-2
                             <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>IndexOffset</span> { <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>mem</span>, <span class='ident'>offset</span>: <span class='ident'>n</span> };
                             (<span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>a</span>[<span class='ident'>n</span><span class='op'>-</span><span class='number'>2</span>])
                         };
-    
+
                         {
                             <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>swap</span>;
-    
+
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span> <span class='op'>=</span> <span class='ident'>next_val</span>;
                             <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>MEM_SIZE</span>).<span class='ident'>rev</span>() {
 <span class='comment'>//                                       ^~~~~~~~ changed</span>
                                 <span class='ident'>swap</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span>]);
                             }
                         }
-    
+
                         <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='number'>1</span>;
                         <span class='prelude-val'>Some</span>(<span class='ident'>next_val</span>)
                     }
                 }
             }
-    
+
             <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
         }
     };
@@ -1591,38 +1591,38 @@ let four = </span><span class="sc-1">{
 <span class='comment'>//    ^~~~~~~~~~   ^~~~~~~~~~ changed</span>
         {
             <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Index</span>;
-            
+
             <span class='kw'>const</span> <span class='ident'>MEM_SIZE</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='macro'>count_exprs</span><span class='macro'>!</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>);
-    
+
             <span class='kw'>struct</span> <span class='ident'>Recurrence</span> {
                 <span class='ident'>mem</span>: [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>; <span class='ident'>MEM_SIZE</span>],
                 <span class='ident'>pos</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>struct</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>; <span class='ident'>MEM_SIZE</span>],
                 <span class='ident'>offset</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>;
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
                 <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span> {
                     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Wrapping</span>;
-                    
+
                     <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>index</span>);
                     <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='self'>self</span>.<span class='ident'>offset</span>);
                     <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>MEM_SIZE</span>);
-                    
+
                     <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='ident'>index</span> <span class='op'>-</span> <span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>window</span>;
                     <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>.<span class='number'>0</span>]
                 }
             }
-    
+
             <span class='kw'>impl</span> <span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
                 <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>;
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>MEM_SIZE</span> {
@@ -1637,22 +1637,22 @@ let four = </span><span class="sc-1">{
 <span class='comment'>//                              ^~~~ changed</span>
                             <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>recur</span>
                         };
-    
+
                         {
                             <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>swap</span>;
-    
+
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span> <span class='op'>=</span> <span class='ident'>next_val</span>;
                             <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>MEM_SIZE</span>).<span class='ident'>rev</span>() {
                                 <span class='ident'>swap</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span>]);
                             }
                         }
-    
+
                         <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='number'>1</span>;
                         <span class='prelude-val'>Some</span>(<span class='ident'>next_val</span>)
                     }
                 }
             }
-    
+
             <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
         }
     };
@@ -1833,38 +1833,38 @@ plugin = true
     ( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>seq</span>:<span class='ident'>ident</span> [ <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ind</span>:<span class='ident'>ident</span> ]: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>:<span class='ident'>ty</span> <span class='op'>=</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>:<span class='ident'>expr</span>),<span class='op'>+</span> ... <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>recur</span>:<span class='ident'>expr</span> ) <span class='op'>=&gt;</span> {
         {
             <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Index</span>;
-            
+
             <span class='kw'>const</span> <span class='ident'>MEM_SIZE</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='macro'>_recurrence_count_exprs</span><span class='macro'>!</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>);
-    
+
             <span class='kw'>struct</span> <span class='ident'>Recurrence</span> {
                 <span class='ident'>mem</span>: [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>; <span class='ident'>MEM_SIZE</span>],
                 <span class='ident'>pos</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>struct</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>; <span class='ident'>MEM_SIZE</span>],
                 <span class='ident'>offset</span>: <span class='ident'>usize</span>,
             }
-    
+
             <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Index</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>IndexOffset</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
                 <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>;
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
                 <span class='kw'>fn</span> <span class='ident'>index</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span> {
                     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Wrapping</span>;
-                    
+
                     <span class='kw'>let</span> <span class='ident'>index</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>index</span>);
                     <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='self'>self</span>.<span class='ident'>offset</span>);
                     <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>Wrapping</span>(<span class='ident'>MEM_SIZE</span>);
-                    
+
                     <span class='kw'>let</span> <span class='ident'>real_index</span> <span class='op'>=</span> <span class='ident'>index</span> <span class='op'>-</span> <span class='ident'>offset</span> <span class='op'>+</span> <span class='ident'>window</span>;
                     <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>slice</span>[<span class='ident'>real_index</span>.<span class='number'>0</span>]
                 }
             }
-    
+
             <span class='kw'>impl</span> <span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='ident'>Recurrence</span> {
                 <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span>;
-    
+
                 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
                 <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>sty</span><span class='op'>&gt;</span> {
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>&lt;</span> <span class='ident'>MEM_SIZE</span> {
@@ -1877,22 +1877,22 @@ plugin = true
                             <span class='kw'>let</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>seq</span> <span class='op'>=</span> <span class='ident'>IndexOffset</span> { <span class='ident'>slice</span>: <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>mem</span>, <span class='ident'>offset</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ind</span> };
                             <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>recur</span>
                         };
-    
+
                         {
                             <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>swap</span>;
-    
+
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span> <span class='op'>=</span> <span class='ident'>next_val</span>;
                             <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>MEM_SIZE</span>).<span class='ident'>rev</span>() {
                                 <span class='ident'>swap</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>swap_tmp</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span>]);
                             }
                         }
-    
+
                         <span class='self'>self</span>.<span class='ident'>pos</span> <span class='op'>+=</span> <span class='number'>1</span>;
                         <span class='prelude-val'>Some</span>(<span class='ident'>next_val</span>)
                     }
                 }
             }
-    
+
             <span class='ident'>Recurrence</span> { <span class='ident'>mem</span>: [$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>inits</span>),<span class='op'>+</span>], <span class='ident'>pos</span>: <span class='number'>0</span> }
         }
     };
