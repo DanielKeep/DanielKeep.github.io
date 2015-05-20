@@ -1764,7 +1764,7 @@ macro_rules! X { () => ("X") }
     </tr>
 </table>
 
-<p>Note that the definition of <code>X</code> cuts clear through the module heirarchy and across files.  For this reason, I personally recommend that you always define macros in the <em>first</em> module defined in a library, or at the top of your <code>lib.rs</code> or <code>main.rs</code> file.</p>
+<p>Note that the definition of <code>X</code> cuts clear through the module hierarchy and across files.  For this reason, I personally recommend that you always define macros in the <em>first</em> module defined in a library, or at the top of your <code>lib.rs</code> or <code>main.rs</code> file.</p>
 
 <p><strong>Macros are individually exported.</strong> In order to make a macro available to other crates, you have to use the <code>#[macro_export]</code> attribute.  Note that this and <code>#[macro_use]</code> are <em>unrelated</em>.  You can have a macro exported to other crates, but which is not available to most of your own crate.  So, for example:</p>
 <pre id='rust-example-rendered' class='rust '>
