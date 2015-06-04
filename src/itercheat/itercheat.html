@@ -21,6 +21,10 @@ table.summary td, table.summary th {
     padding: 0.5em 0.4em;
 }
 
+table.summary tr.tag-unstable {
+    background-color: orange;
+}
+
 </style>
 </head>
 <body>
@@ -47,6 +51,12 @@ table.summary td, table.summary th {
     <ul>
         <li><p><label><input class="lib-toggle" data-lib="std" id="lib-std" name="lib-std" type="checkbox" checked> <strong>Std</strong></label>: the Rust standard library.  Methods are defined on the <a href="http://doc.rust-lang.org/std/iter/trait.Iterator.html"><code>std::iter::Iterator</code></a> trait.</p></li>
         <li><p><label><input class="lib-toggle" data-lib="itertools" id="lib-itertools" name="lib-itertools" type="checkbox" checked> <strong>IT</strong></label>: the <a href="https://crates.io/crates/itertools"><code>itertools</code></a> library.  Methods are defined on the <a href="https://bluss.github.io/rust-itertools/doc/itertools/trait.Itertools.html"><code>itertools::Itertools</code></a> trait.</p></li>
+    </ul>
+
+    <p>Additional filtering options:</p>
+
+    <ul>
+        <li><p><label><input class="tag-toggle" data-tag="unstable" id="tag-unstable" name="tag-unstable" type="checkbox"> <strong>Unstable</strong></label>: show unstable methods.</p></li>
     </ul>
 
     <p>This is intended to be used in one of a few ways:</p>
@@ -84,6 +94,57 @@ table.summary td, table.summary th {
 
         <li><p>\(\circ\) is an arbitrary binary function.</p></li>
     </ul>
+
+    <h2>Generators</h2>
+
+    <table class="summary">
+    <thead>
+        <tr>
+            <th>Lib</td>
+            <th>Method</th>
+            <th colspan="2">Input</th>
+            <th>Output</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr data-tags="unstable">
+            <td>Std</td>
+            <td data-doc-link="http://doc.rust-lang.org/nightly/std/iter/fn.empty.html">empty</td>
+            <td colspan="2"></td>
+            <td>\(\{\}\)</td>
+        </tr>
+
+        <tr data-tags="unstable">
+            <td>Std</td>
+            <td data-doc-link="http://doc.rust-lang.org/nightly/std/iter/fn.iterate.html">iterate</td>
+            <td>\(seed:T\)</td>
+            <td>\(f: T \rightarrow T\)</td>
+            <td>\(\{f(seed), f(f(seed)), \ldots\}\)</td>
+        </tr>
+
+        <tr data-tags="unstable">
+            <td>Std</td>
+            <td data-doc-link="http://doc.rust-lang.org/nightly/std/iter/fn.once.html">once</td>
+            <td colspan="2">\(a\)</td>
+            <td>\(\{a\}\)</td>
+        </tr>
+
+        <tr data-tags="unstable">
+            <td>Std</td>
+            <td data-doc-link="http://doc.rust-lang.org/nightly/std/iter/fn.range_inclusive.html">range_inclusive</td>
+            <td>\(i\)</td>
+            <td>\(j\)</td>
+            <td>\(\{i, i+1, \ldots, j\}\)</td>
+        </tr>
+
+        <tr>
+            <td>Std</td>
+            <td data-doc-link="http://doc.rust-lang.org/std/iter/fn.repeat.html">repeat</td>
+            <td colspan="2">\(a\)</td>
+            <td>\(\{a, a, \ldots\}\)</td>
+        </tr>
+    </tbody>
+    </table>
 
     <h2>Sequences</h2>
 
@@ -683,18 +744,18 @@ table.summary td, table.summary th {
             <td>\(\text{None}\)</td>
         </tr>
 
-        <tr>
+        <tr data-tags="unstable">
             <td rowspan="3">Std</td>
             <td rowspan="3">max_by</td>
             <td>\(\{a_0, \ldots\}\)</td>
             <td rowspan="3">\(f : \&amp;T \rightarrow B\)</td>
             <td>\(\text{Some}(a_i) : b = max(\{f(a_0), \ldots\}), i \text{ is the last where } f(a_i) = b\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td>\(\{a_0\}\)</td>
             <td>\(\text{Some}(a_0)\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td>\(\{\}\)</td>
             <td>\(\text{None}\)</td>
         </tr>
@@ -714,33 +775,33 @@ table.summary td, table.summary th {
             <td>\(\text{None}\)</td>
         </tr>
 
-        <tr>
+        <tr data-tags="unstable">
             <td rowspan="3">Std</td>
             <td rowspan="3">min_by</td>
             <td>\(\{a_0, \ldots\}\)</td>
             <td rowspan="3">\(f : \&amp;T \rightarrow B\)</td>
             <td>\(\text{Some}(a_i) : b = min(\{f(a_0), \ldots\}), i \text{ is the first where } f(a_i) = b\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td>\(\{a_0\}\)</td>
             <td>\(\text{Some}(a_0)\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td>\(\{\}\)</td>
             <td>\(\text{None}\)</td>
         </tr>
 
-        <tr>
+        <tr data-tags="unstable">
             <td rowspan="3">Std</td>
             <td rowspan="3">min_max</td>
             <td colspan="2">\(\{a_0, \ldots\}\)</td>
             <td>\(\text{MinMax}(min(\{a_0, \ldots\}), max(\{a_0, \ldots\}))\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td colspan="2">\(\{a_0\}\)</td>
             <td>\(\text{OneElement}(a_0)\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td colspan="2">\(\{\}\)</td>
             <td>\(\text{NoElements}\)</td>
         </tr>
@@ -771,17 +832,17 @@ table.summary td, table.summary th {
             </td>
         </tr>
 
-        <tr>
+        <tr data-tags="unstable">
             <td rowspan="3">Std</td>
             <td rowspan="3">product</td>
             <td colspan="2">\(\{a_0, a_1, \ldots\}\)</td>
             <td>\(((a_0 \times a_1) \times \ldots)\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td colspan="2">\(\{a_0\}\)</td>
             <td>\(a_0\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td colspan="2">\(\{\}\)</td>
             <td>\(1\)</td>
         </tr>
@@ -815,17 +876,17 @@ table.summary td, table.summary th {
             <td>\(\{b_0, \ldots, b_{i-1}, \underline{b_i, \ldots}\} : \{T\}\)</td>
         </tr>
 
-        <tr>
+        <tr data-tags="unstable">
             <td rowspan="3">Std</td>
             <td rowspan="3">sum</td>
             <td colspan="2">\(\{a_0, a_1, \ldots\}\)</td>
             <td>\(((a_0 + a_1) + \ldots)\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td colspan="2">\(\{a_0\}\)</td>
             <td>\(a_0\)</td>
         </tr>
-        <tr>
+        <tr data-tags="unstable">
             <td colspan="2">\(\{\}\)</td>
             <td>\(0\)</td>
         </tr>
@@ -897,7 +958,7 @@ table.summary td, table.summary th {
             <td>Allows you to preview (peek at) the next item in the sequence without removing it.</td>
         </tr>
 
-        <tr>
+        <tr data-tags="unstable">
             <td>Std</td>
             <td>reverse_in_place</td>
             <td>Consumes an <code>Iterator&lt;Item=&amp;mut T></code> (typically derived from some container), and reverses the order of the elements being pointed to.</td>
@@ -920,6 +981,8 @@ table.summary td, table.summary th {
 
     <script class="build-only" type="text/javascript">
 
+    "use strict";
+
     // Add library source classes.
     var LIBS = {
         'std': {
@@ -934,12 +997,12 @@ table.summary td, table.summary th {
         },
     };
 
-    for (var lib_name in LIBS) {
-        function do_trs(trs, lib_name) {
-            trs.addClass("lib-"+lib_name);
-            trs.attr("data-lib", lib_name);
-        }
+    function do_trs(trs, lib_name) {
+        trs.addClass("lib-"+lib_name);
+        trs.attr("data-lib", lib_name);
+    }
 
+    for (var lib_name in LIBS) {
         var lib = LIBS[lib_name];
 
         var lib_tds = $("table.summary tr > td:nth-child(1):contains('"+lib.display+"')");
@@ -966,6 +1029,16 @@ table.summary td, table.summary th {
         };
     };
 
+    // Promote tags to classes.
+    $("table.summary tr[data-tags]").each(function () {
+        var self = $(this)[0];
+        var tags = self.getAttribute("data-tags").trim().split(/\s+/);
+        for (var i = 0; i < tags.length; i++) {
+            var tag = tags[i];
+            self.classList.add("tag-"+tag);
+        };
+    });
+
     // Reformat all the method names in the summary.
     $("table.summary tr.primary > td:nth-child(2)").each(function () {
         var self = $(this)[0];
@@ -989,25 +1062,86 @@ table.summary td, table.summary th {
 
     </script><script type="text/javascript">
 
-    // Set up library toggles.
-    function handle_lib_toggle(elem) {
-        var show = elem.checked;
-        var lib = elem.getAttribute("data-lib");
-        var trs = document.querySelectorAll("table.summary tr.lib-"+lib);
-        var display_val;
-        if (show) display_val = "";
-        else display_val = "none";
+    "use strict";
+
+    // Set up filters.
+    function check_elem_vis(elem, filters) {
+        for (var i = 0; i < elem.classList.length; i++) {
+            var klass = elem.classList[i];
+            if(klass.search(/^lib-|tag-/) === 0) {
+                if(filters[klass] !== true) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function get_filters() {
+        var filters = {};
+
+        var lib_toggles = document.querySelectorAll("input.lib-toggle");
+        for (var i = 0; i < lib_toggles.length; i++) {
+            var lib_toggle = lib_toggles[i];
+            var name = lib_toggle.getAttribute("data-lib");
+            filters['lib-'+name] = lib_toggle.checked;
+        };
+
+        var tag_toggles = document.querySelectorAll("input.tag-toggle");
+        for (var i = 0; i < tag_toggles.length; i++) {
+            var tag_toggle = tag_toggles[i];
+            var name = tag_toggle.getAttribute("data-tag");
+            filters['tag-'+name] = tag_toggle.checked;
+        };
+
+        return filters;
+    }
+
+    function handle_filter_change(filter_changed) {
+        var filters = get_filters();
+
+        var query;
+        if(filter_changed === '*')
+            query = "table.summary tr";
+        else
+            query = "table.summary tr." + filter_changed;
+
+        var trs = document.querySelectorAll(query);
+
         for (var i = 0; i < trs.length; i++) {
-            trs[i].style.display = display_val;
+            var tr = trs[i];
+            var display_val;
+            if(check_elem_vis(tr, filters)) display_val = "";
+            else display_val = "none";
+            tr.style.display = display_val;
         };
     }
 
-    var lib_toggles = document.querySelectorAll("input.lib-toggle[type='checkbox']");
-    for (var i = 0; i < lib_toggles.length; i++) {
-        var lib_toggle = lib_toggles[i];
-        handle_lib_toggle(lib_toggle);
-        lib_toggle.addEventListener("change", function(){handle_lib_toggle(this)});
-    };
+    function handle_lib_toggle(elem) {
+        var lib = elem.getAttribute("data-lib");
+        handle_filter_change("lib-"+lib);
+    }
+
+    function handle_tag_toggle(elem) {
+        var tag = elem.getAttribute("data-tag");
+        handle_filter_change("tag-"+tag);
+    }
+
+    (function () {
+        var lib_toggles = document.querySelectorAll("input.lib-toggle[type='checkbox']");
+        for (var i = 0; i < lib_toggles.length; i++) {
+            var lib_toggle = lib_toggles[i];
+            lib_toggle.addEventListener("change", function(){handle_lib_toggle(this)});
+        };
+
+        var tag_toggles = document.querySelectorAll("input.tag-toggle[type='checkbox']");
+        for (var i = 0; i < tag_toggles.length; i++) {
+            var tag_toggle = tag_toggles[i];
+            tag_toggle.addEventListener("change", function(){handle_tag_toggle(this)});
+        };
+
+        handle_filter_change('*');
+    })();
 
     </script>
 </body>
