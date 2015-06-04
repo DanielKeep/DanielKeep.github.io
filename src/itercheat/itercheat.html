@@ -942,12 +942,15 @@ table.summary td, table.summary th {
 
         var lib = LIBS[lib_name];
 
-        var lib_tds = $("table.summary tr > td:nth-child(1):contains('"+lib.display+"') + td");
+        var lib_tds = $("table.summary tr > td:nth-child(1):contains('"+lib.display+"')");
         var lib_tds = lib_tds.toArray();
 
         // Do it this way so that we can handle rowspan'd summaries.
         for (var i = 0; i < lib_tds.length; i++) {
             var lib_td = lib_tds[i];
+            $(lib_td).addClass("lib");
+            $(lib_td.nextElementSibling).addClass("method-name");
+
             var rows = (+lib_td.getAttribute("rowspan")) || 1;
 
             var cur_tr = lib_td.parentNode;
