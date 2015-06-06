@@ -222,18 +222,18 @@ table.summary tr.tag-unstable {
             <td>
                 \(
                     \begin{array}{llcl}
-                    &amp; \{x_0, \ldots\} &amp;\text{where}&amp;
+                    &amp; \{x_0, \ldots\} &amp;\text{wh.}&amp;
                         \left\{\begin{array}{l}
                             f(a_0, a_1) = \text{Ok}(x_0), \\
                             \ldots
                         \end{array}\right. \\
-                    \text{or} &amp; \{a'_0, x_1, \ldots\} &amp;\text{where}&amp;
+                    \text{or} &amp; \{a'_0, x_1, \ldots\} &amp;\text{wh.}&amp;
                         \left\{\begin{array}{l}
                             f(a_0, a_1) = \text{Err}((a'_0, a'_1)), \\
                             f(a'_1, a_2) = \text{Ok}(x_1), \\
                             \ldots
                         \end{array}\right. \\
-                    \text{or} &amp; \{a'_0, a''_1, \ldots\} &amp;\text{where}&amp;
+                    \text{or} &amp; \{a'_0, a''_1, \ldots\} &amp;\text{wh.}&amp;
                         \left\{\begin{array}{l}
                             f(a_0, a_1) = \text{Err}((a'_0, a'_1)), \\
                             f(a'_1, a_2) = \text{Err}(a''_1, a'_2), \\
@@ -287,12 +287,12 @@ table.summary tr.tag-unstable {
             <td rowspan="2">IT</td>
             <td rowspan="2">dropping</td>
             <td>\(\{\underbrace{a_0, \ldots, a_{i-1}}_{\text{consumed}}, a_i, \ldots\}\)</td>
-            <td>\(i \text{ where } i \lt n\)</td>
+            <td>\(i \text{ wh. } i \lt n\)</td>
             <td>\(\{a_i, \ldots\}\) (consumes \(a_0 \ldots a_{i-1}\) immediately)</td>
         </tr>
         <tr>
             <td>\(\{\underbrace{a_0, \ldots, a_{n-1}}_{\text{consumed}}\}\)</td>
-            <td>\(i \text{ where } i \ge n\)</td>
+            <td>\(i \text{ wh. } i \ge n\)</td>
             <td>\(\{\}\) (consumes \(a_0 \ldots a_{n-1}\) immediately)</td>
         </tr>
 
@@ -300,12 +300,12 @@ table.summary tr.tag-unstable {
             <td rowspan="2">IT</td>
             <td rowspan="2">dropping_back</td>
             <td>\(\{a_0, \ldots, a_{n-i-1}, \underbrace{a_{n-i}, \ldots, a_{n-1}}_{\text{consumed}}\}\)</td>
-            <td>\(i \text{ where } i \lt n\)</td>
+            <td>\(i \text{ wh. } i \lt n\)</td>
             <td>\(\{a_0, \ldots, a_{n-i-1}\}\) (consumes \(a_{n-i} \ldots a_n\) immediately)</td>
         </tr>
         <tr>
             <td>\(\{\underbrace{a_0, \ldots, a_{n-1}}_{\text{consumed}}\}\)</td>
-            <td>\(i \text{ where } i \ge n\)</td>
+            <td>\(i \text{ wh. } i \ge n\)</td>
             <td>\(\{\}\) (consumes \(a_0 \ldots a_n\) immediately)</td>
         </tr>
 
@@ -321,7 +321,7 @@ table.summary tr.tag-unstable {
             <td>filter</td>
             <td>\(\{a_0, a_1, \ldots\}\),</td>
             <td>\(p : \&amp;T \rightarrow \text{bool}\)</td>
-            <td>\(\{a_i \text{ for all } i \text{ where } p(\&amp;a_i)\}\)</td>
+            <td>\(\{a_i \text{ for all } i \text{ wh. } p(\&amp;a_i)\}\)</td>
         </tr>
 
         <tr>
@@ -429,18 +429,18 @@ table.summary tr.tag-unstable {
         <tr>
             <td rowspan="1">IT</td>
             <td rowspan="1">merge</td>
-            <td rowspan="1">\(\{a_0, a_1, \ldots\} \text{ where } a_0 \le a_1 \le \ldots\),</td>
-            <td rowspan="1">\(\{b_0, b_1, \ldots\} \text{ where } b_0 \le b_1 \le \ldots\)</td>
-            <td>\(\{c_0, c_1, \ldots\} \text{ where } c_0 \le c_1 \le \ldots, a \subseteq c, b \subseteq c\)</td>
+            <td rowspan="1">\(\{a_0, a_1, \ldots\} \text{ wh. } a_0 \le a_1 \le \ldots\),</td>
+            <td rowspan="1">\(\{b_0, b_1, \ldots\} \text{ wh. } b_0 \le b_1 \le \ldots\)</td>
+            <td>\(\{c_0, c_1, \ldots\} \text{ wh. } c_0 \le c_1 \le \ldots, a \subseteq c, b \subseteq c\)</td>
         </tr>
 
         <tr>
             <td rowspan="1">IT</td>
             <td rowspan="1">merge_by</td>
-            <td rowspan="1">\(\{a_0, a_1, \ldots\} \text{ where } a_0 \circ a_1 \circ \ldots\),</td>
-            <td rowspan="1">\(\{b_0, b_1, \ldots\} \text{ where } b_0 \circ b_1 \circ \ldots\),
+            <td rowspan="1">\(\{a_0, a_1, \ldots\} \text{ wh. } a_0 \circ a_1 \circ \ldots\),</td>
+            <td rowspan="1">\(\{b_0, b_1, \ldots\} \text{ wh. } b_0 \circ b_1 \circ \ldots\),
                 \({}\circ{} : (\&amp;T,\&amp;T) -> \text{Ordering}\)</td>
-            <td>\(\{c_0, c_1, \ldots\} \text{ where } c_0 \circ c_1 \circ \ldots, a \subseteq c, b \subseteq c\)</td>
+            <td>\(\{c_0, c_1, \ldots\} \text{ wh. } c_0 \circ c_1 \circ \ldots, a \subseteq c, b \subseteq c\)</td>
         </tr>
 
         <tr>
@@ -448,8 +448,8 @@ table.summary tr.tag-unstable {
             <td>partition</td>
             <td>\(\{a_0, a_1, \ldots\}\)</td>
             <td>\(f: \text{&amp;}T \rightarrow \text{bool}\)</td>
-            <td>\(([a_i \text{ for all } i \text{ where } f(\&amp;a_i) = \text{true}], \\~~
-                [a_i \text{ for all } i \text{ where } f(\&amp;a_i) = \text{false}])\)</td>
+            <td>\(([a_i \text{ for all } i \text{ wh. } f(\&amp;a_i) = \text{true}], \\~~
+                [a_i \text{ for all } i \text{ wh. } f(\&amp;a_i) = \text{false}])\)</td>
         </tr>
 
         <tr>
@@ -464,7 +464,7 @@ table.summary tr.tag-unstable {
             <td>scan</td>
             <td>\(\{a_0, a_1, \ldots\}\),</td>
             <td>\(s : \text{&amp;mut }S\), \(f : (\text{&amp;mut }S, T) \rightarrow \text{Some}(U) ~|~ \text{None}\)</td>
-            <td>\(\{x_i \text{ for all } i \text{ where } f(s, a_i) = Some(x_i)\}\)</td>
+            <td>\(\{x_i \text{ for all } i \text{ wh. } f(s, a_i) = Some(x_i)\}\)</td>
         </tr>
 
         <tr>
@@ -476,7 +476,7 @@ table.summary tr.tag-unstable {
         </tr>
         <tr>
             <td>\(\{a_0, \ldots, a_{n-1}\}\),</td>
-            <td>\(i \text{ where } i \ge n\)</td>
+            <td>\(i \text{ wh. } i \ge n\)</td>
             <td>\(\{\}\)</td>
         </tr>
 
@@ -485,7 +485,7 @@ table.summary tr.tag-unstable {
             <td>skip_while</td>
             <td>\(\{a_0, \ldots, a_i, \ldots\}\),</td>
             <td>\(p : \&amp;T \rightarrow \text{bool}\)</td>
-            <td>\(\{a_i, \ldots\} \text{ where } i \text{ is first where } p(\&amp;a_i) \)</td>
+            <td>\(\{a_i, \ldots\} \text{ wh. } i \text{ is first wh. } p(\&amp;a_i) \)</td>
         </tr>
 
         <tr>
@@ -522,7 +522,7 @@ table.summary tr.tag-unstable {
         </tr>
         <tr>
             <td>\(\{a_0, \ldots, a_{n-1}\}\),</td>
-            <td>\(i \text{ where } i \ge n\)</td>
+            <td>\(i \text{ wh. } i \ge n\)</td>
             <td>\(\{a_0, \ldots, a_{n-1}\}\)</td>
         </tr>
 
@@ -531,7 +531,7 @@ table.summary tr.tag-unstable {
             <td>take_while</td>
             <td>\(\{a_0, \ldots, a_{i-1}, a_i, \underline{\ldots}\}\),</td>
             <td>\(p : \&amp;T \rightarrow \text{bool}\)</td>
-            <td>\(\{a_0, \ldots, a_{i-1}\} \text{ where } i \text{ is first where } p(\&amp;a_i) = \text{false} \)</td>
+            <td>\(\{a_0, \ldots, a_{i-1}\} \text{ wh. } i \text{ is first wh. } p(\&amp;a_i) = \text{false} \)</td>
         </tr>
 
         <tr>
@@ -539,7 +539,7 @@ table.summary tr.tag-unstable {
             <td>take_while_ref</td>
             <td>\(\text{&amp;mut }\{a_0, \ldots, a_{i-1}, \underline{a_i, \ldots}\}\),</td>
             <td>\(p : \&amp;T \rightarrow \text{bool}\)</td>
-            <td>\(\{a_0, \ldots, a_{i-1}\} \text{ where } i \text{ is first where } p(\&amp;a_i) = \text{false} \)</td>
+            <td>\(\{a_0, \ldots, a_{i-1}\} \text{ wh. } i \text{ is first wh. } p(\&amp;a_i) = \text{false} \)</td>
         </tr>
 
         <tr>
@@ -605,7 +605,7 @@ table.summary tr.tag-unstable {
             <td rowspan="2">all</td>
             <td>\(\text{&amp;mut }\{a_0, \ldots, a_{i-1}, a_i, \underline{\ldots}\}\)</td>
             <td rowspan="2">\(p:T \rightarrow \text{bool}\)</td>
-            <td>\(p(a_0) \land \ldots \land p(a_{i-1}) \text{ where } i \text{ is first where } p(a_i) = \text{false}\)</td>
+            <td>\(p(a_0) \land \ldots \land p(a_{i-1}) \text{ wh. } i \text{ is first wh. } p(a_i) = \text{false}\)</td>
         </tr>
         <tr>
             <td>\(\text{&amp;mut }\{\}\)</td>
@@ -617,7 +617,7 @@ table.summary tr.tag-unstable {
             <td rowspan="2">any</td>
             <td>\(\text{&amp;mut }\{a_0, \ldots, a_{i-1}, a_i, \underline{\ldots}\}\)</td>
             <td rowspan="2">\(p:T \rightarrow \text{bool}\)</td>
-            <td>\(p(a_0) \lor \ldots \lor p(a_{i-1}) \text{ where } i \text{ is first where } p(a_i)\)</td>
+            <td>\(p(a_0) \lor \ldots \lor p(a_{i-1}) \text{ wh. } i \text{ is first wh. } p(a_i)\)</td>
         </tr>
         <tr>
             <td>\(\text{&amp;mut }\{\}\)</td>
@@ -635,12 +635,12 @@ table.summary tr.tag-unstable {
             <td rowspan="2">IT</td>
             <td rowspan="2">dropn</td>
             <td>\(\text{&amp;mut }\{\underbrace{a_0, \ldots, a_{i-1}}_{\text{consumed}}, \underline{a_i, \ldots}\}\)</td>
-            <td>\(i \text{ where } i \le n\)</td>
+            <td>\(i \text{ wh. } i \le n\)</td>
             <td>\(i\)</td>
         </tr>
         <tr>
             <td>\(\text{&amp;mut }\{\underbrace{a_0, \ldots, a_{n-1}}_{\text{consumed}}\}\)</td>
-            <td>\(i \text{ where } i \gt n\)</td>
+            <td>\(i \text{ wh. } i \gt n\)</td>
             <td>\(n\)</td>
         </tr>
 
@@ -651,7 +651,7 @@ table.summary tr.tag-unstable {
             <td>\(p : T \rightarrow \text{bool}\)</td>
             <td>
                 \(\begin{array}{ll}
-                    \text{Some}(a_i) &amp;\text{where } i \text{ is first where } p(\&amp;a_i) \\
+                    \text{Some}(a_i) &amp;\text{wh. } i \text{ is first wh. } p(\&amp;a_i) \\
                     \text{None} &amp; \text{otherwise}
                 \end{array}\)
             </td>
@@ -664,7 +664,7 @@ table.summary tr.tag-unstable {
             <td>\(p : T \rightarrow \text{bool}\)</td>
             <td>
                 \(\begin{array}{ll}
-                    \text{Some}((i, a_i)) &amp;\text{where } i \text{ is first where } p(\&amp;a_i) \\
+                    \text{Some}((i, a_i)) &amp;\text{wh. } i \text{ is first wh. } p(\&amp;a_i) \\
                     \text{None} &amp; \text{otherwise}
                 \end{array}\)
             </td>
@@ -705,17 +705,17 @@ table.summary tr.tag-unstable {
             <td rowspan="3">\(init : U\), \(\circ : (U,T) \rightarrow U\)</td>
             <td>
                 \(
-                    \text{Ok}(\text{fold}(x, \circ)) \text{ where }
-                        x = \{x_i \text{ where all } a_i = \text{Ok}(x_i)\}
+                    \text{Ok}(\text{fold}(x, \circ)) \text{ wh. }
+                        x = \{x_i \text{ wh. all } a_i = \text{Ok}(x_i)\}
                 \)
             </td>
         </tr>
         <tr>
-            <td>\(\text{&amp;mut }\{\ldots, a_i, \underline{\ldots}\} \text{ where } a_i = text{Err}(..)\),</td>
+            <td>\(\text{&amp;mut }\{\ldots, a_i, \underline{\ldots}\} \text{ wh. } a_i = text{Err}(..)\),</td>
             <td>
                 \(
-                    \text{Err}(e) \text{ where }
-                        i \text{ is first where } a_i = \text{Err}(e)
+                    \text{Err}(e) \text{ wh. }
+                        i \text{ is first wh. } a_i = \text{Err}(e)
                 \)
             </td>
         </tr>
@@ -770,7 +770,7 @@ table.summary tr.tag-unstable {
             <td rowspan="3">max_by</td>
             <td>\(\{a_0, \ldots\}\)</td>
             <td rowspan="3">\(f : \&amp;T \rightarrow B\)</td>
-            <td>\(\text{Some}(a_i) : b = max(\{f(a_0), \ldots\}), i \text{ is the last where } f(a_i) = b\)</td>
+            <td>\(\text{Some}(a_i) : b = max(\{f(a_0), \ldots\}), i \text{ is the last wh. } f(a_i) = b\)</td>
         </tr>
         <tr data-tags="unstable">
             <td>\(\{a_0\}\)</td>
@@ -801,7 +801,7 @@ table.summary tr.tag-unstable {
             <td rowspan="3">min_by</td>
             <td>\(\{a_0, \ldots\}\)</td>
             <td rowspan="3">\(f : \&amp;T \rightarrow B\)</td>
-            <td>\(\text{Some}(a_i) : b = min(\{f(a_0), \ldots\}), i \text{ is the first where } f(a_i) = b\)</td>
+            <td>\(\text{Some}(a_i) : b = min(\{f(a_0), \ldots\}), i \text{ is the first wh. } f(a_i) = b\)</td>
         </tr>
         <tr data-tags="unstable">
             <td>\(\{a_0\}\)</td>
@@ -847,7 +847,7 @@ table.summary tr.tag-unstable {
             <td>\(p : T \rightarrow \text{bool}\)</td>
             <td>
                 \(\begin{array}{ll}
-                    \text{Some}(i) &amp;\text{where } i \text{ is first where } p(\&amp;a_i) \\
+                    \text{Some}(i) &amp;\text{wh. } i \text{ is first wh. } p(\&amp;a_i) \\
                     \text{None} &amp; \text{otherwise}
                 \end{array}\)
             </td>
@@ -875,7 +875,7 @@ table.summary tr.tag-unstable {
             <td>\(p : T \rightarrow \text{bool}\)</td>
             <td>
                 \(\begin{array}{ll}
-                    \text{Some}(i) &amp;\text{where } i \text{ is last where } p(\&amp;a_i) \\
+                    \text{Some}(i) &amp;\text{wh. } i \text{ is last wh. } p(\&amp;a_i) \\
                     \text{None} &amp; \text{otherwise}
                 \end{array}\)
             </td>
