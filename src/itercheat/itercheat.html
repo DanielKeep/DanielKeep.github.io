@@ -1066,15 +1066,17 @@ table.summary tr.tag-unstable {
         var name = $(this).text();
 
         var lib = $(this)[0].parentNode.getAttribute("data-lib");
-        var trait_url = LIBS[lib].trait_url;
+        var doc_url = $(this)[0].getAttribute("data-doc-link");
+
+        // Guess at the doc link if one wasn't provided.
+        if(!doc_url)
+            doc_url = LIBS[lib].trait_url + "#method." + name;
 
         // Let MathJax format this for consistency.
         $(this).text("\\(\\text{" + name + "}\\)");
 
         // Set up link.
-        if (trait_url) {
-            $(this).wrapInner("<a href=\""+trait_url+"#method."+name+"\"></a>");
-        }
+        $(this).wrapInner("<a href=\""+doc_url+"\"></a>");
     });
 
     // Kill all build nodes.
