@@ -362,6 +362,24 @@ table.summary tr.tag-unstable {
         </tr>
 
         <tr>
+            <td>IT</td>
+            <td>group_by_lazy</td>
+            <td>\(\{\underbrace{a_0, \ldots, a_{i-1}}_{g(a_x) = g_0},
+                \underbrace{a_i, \ldots, a_{j-1}}_{g(a_y) = g_1 \ne g_0},
+                \underbrace{a_j, \ldots, a_{k-1}}_{g(a_z) = g_2 \ne g_1},
+                \ldots\}\),</td>
+            <td>\(g : \&amp;T \rightarrow G\)</td>
+            <td>\(
+                \{
+                    (g_0, \{a_0, \ldots, a_{i-1}\}),\\~~
+                    (g_1, \{a_i, \ldots, a_{j-1}\}),\\~~
+                    (g_2, \{a_j, \ldots, a_{k-1}\}),
+                    \ldots
+                \}
+            \)</td>
+        </tr>
+
+        <tr>
             <td rowspan="3">IT</td>
             <td rowspan="3">interleave</td>
             <td>\(\{a_0, a_1, \ldots, a_{i-1}, a_i, \ldots\}\)</td>
@@ -377,6 +395,19 @@ table.summary tr.tag-unstable {
             <td>\(\{a_0, a_1, \ldots, a_{i-1}\}\)</td>
             <td>\(\{b_0, b_1, \ldots, b_{i-1}, b_i, \ldots\}\)</td>
             <td>\(\{a_0, b_0, a_1, b_1, \ldots, a_{i-1}, b_{i-1}, b_i, \ldots\}\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="2">IT</td>
+            <td rowspan="2">interleave_shortest</td>
+            <td>\(\{a_0, a_1, \ldots, a_{i-1}, a_i, \ldots\}\)</td>
+            <td>\(\{b_0, b_1, \ldots, b_{i-1}\}\)</td>
+            <td>\(\{a_0, b_0, a_1, b_1, \ldots, a_{i-1}, b_{i-1}, a_i\}\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0, a_1, \ldots, a_{i-1}\}\)</td>
+            <td>\(\{b_0, b_1, \ldots, b_{i-1}, b_i, \ldots\}\)</td>
+            <td>\(\{a_0, b_0, a_1, b_1, \ldots, a_{i-1}, b_{i-1}\}\)</td>
         </tr>
 
         <tr>
@@ -556,6 +587,19 @@ table.summary tr.tag-unstable {
             <td>unzip</td>
             <td colspan="2">\(\{(a_0, b_0), (a_1, b_1), \ldots\}\)</td>
             <td>\(([a_0, a_1, \ldots], [b_0, b_1, \ldots])\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>while_some</td>
+            <td>\(\{a_0, \ldots, a_{i-1}, a_i, \underline{\ldots}\}\),</td>
+            <td></td>
+            <td>\(
+                \begin{array}{ll}
+                \{x_j \text{ for all } j &lt; i \text{ wh. } a_j = Some(x_j)\} \\
+                \text{ wh. } i \text{ is the first wh. } a_i = \text{None} \\
+                \end{array}
+                \)</td>
         </tr>
 
         <tr>
