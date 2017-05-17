@@ -3,9 +3,13 @@
 <head>
 <meta charset="utf-8">
 <title>Rust Iterator Cheat Sheet</title>
-<script class="build-only" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script class="build-only" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script class="build-only" type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <style type="text/css">
+
+a {
+    text-decoration: none;
+}
 
 table.summary {
     border-collapse: collapse;
@@ -25,10 +29,40 @@ table.summary tr.tag-unstable {
     background-color: orange;
 }
 
+table.summary .flex-cell {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: stretch;
+    align-content: space-around;
+}
+
+</style>
+<style type="text/css" class="build-only">
+
+#build-status {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+}
+
+#build-status > div {
+    position: fixed;
+    background-color: black;
+    color: white;
+    padding: 0.5em 1em;
+    right: 1em;
+}
+
 </style>
 </head>
 <body>
+    <div id="build-status"><div>Building...</div></div>
+
     <h1>Rust Iterator Cheat Sheet</h1>
+
+    <p><strong>Last updated</strong>: Rust 1.17.0, Itertools 0.6.0.</p>
 
     <p><strong>To-do:</strong></p>
 
@@ -46,11 +80,15 @@ table.summary tr.tag-unstable {
 
     <hr>
 
+    <p><strong>Jump to</strong>: <span id="jump-list"></span>.</p>
+
+    <hr>
+
     <p>This summarises the iterator-related methods defined by the following Rust libraries:</p>
 
     <ul>
         <li><p><label><input class="lib-toggle" data-lib="std" id="lib-std" name="lib-std" type="checkbox" checked> <strong>Std</strong></label>: the Rust standard library.  Methods are defined on the <a href="http://doc.rust-lang.org/std/iter/trait.Iterator.html"><code>std::iter::Iterator</code></a> trait.</p></li>
-        <li><p><label><input class="lib-toggle" data-lib="itertools" id="lib-itertools" name="lib-itertools" type="checkbox" checked> <strong>IT</strong></label>: the <a href="https://crates.io/crates/itertools"><code>itertools</code></a> library.  Methods are defined on the <a href="https://bluss.github.io/rust-itertools/doc/itertools/trait.Itertools.html"><code>itertools::Itertools</code></a> trait.</p></li>
+        <li><p><label><input class="lib-toggle" data-lib="itertools" id="lib-itertools" name="lib-itertools" type="checkbox" checked> <strong>IT</strong></label>: the <a href="https://crates.io/crates/itertools"><code>itertools</code></a> library.  Methods are defined on the <a href="https://docs.rs/itertools/*/itertools/trait.Itertools.html"><code>itertools::Itertools</code></a> trait.</p></li>
     </ul>
 
     <p>Additional filtering options:</p>
@@ -94,10 +132,12 @@ table.summary tr.tag-unstable {
 
         <li><p>\(\circ\) is an arbitrary binary function.</p></li>
 
+        <li><p>\(\langle \ldots\rangle \) is used to indicate a generic type argument contains relevant information.</p></li>
+
         <li><p>\(\text{wh.}\) is an abbreviation for "where".</p></li>
     </ul>
 
-    <h2>Generators</h2>
+    <h2 id="sec-generators">Generators</h2>
 
     <table class="summary">
     <thead>
@@ -109,34 +149,26 @@ table.summary tr.tag-unstable {
         </tr>
     </thead>
     <tbody>
-        <tr data-tags="unstable">
+        <tr>
             <td>Std</td>
-            <td data-doc-link="http://doc.rust-lang.org/nightly/std/iter/fn.empty.html">empty</td>
+            <td data-doc-link="http://doc.rust-lang.org/std/iter/fn.empty.html">empty</td>
             <td colspan="2"></td>
             <td>\(\{\}\)</td>
         </tr>
 
-        <tr data-tags="unstable">
-            <td>Std</td>
-            <td data-doc-link="http://doc.rust-lang.org/nightly/std/iter/fn.iterate.html">iterate</td>
-            <td>\(seed:T\)</td>
-            <td>\(f: T \rightarrow T\)</td>
-            <td>\(\{f(seed), f(f(seed)), \ldots\}\)</td>
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.iterate.html">iterate</td>
+            <td>\(x : T\)</td>
+            <td>\(f : \text{&amp;}T \rightarrow T\)</td>
+            <td>\(\{x, f(x), f(f(x)), \ldots\}\)</td>
         </tr>
 
-        <tr data-tags="unstable">
+        <tr>
             <td>Std</td>
-            <td data-doc-link="http://doc.rust-lang.org/nightly/std/iter/fn.once.html">once</td>
+            <td data-doc-link="http://doc.rust-lang.org/std/iter/fn.once.html">once</td>
             <td colspan="2">\(a\)</td>
             <td>\(\{a\}\)</td>
-        </tr>
-
-        <tr data-tags="unstable">
-            <td>Std</td>
-            <td data-doc-link="http://doc.rust-lang.org/nightly/std/iter/fn.range_inclusive.html">range_inclusive</td>
-            <td>\(i\)</td>
-            <td>\(j\)</td>
-            <td>\(\{i, i+1, \ldots, j\}\)</td>
         </tr>
 
         <tr>
@@ -145,16 +177,39 @@ table.summary tr.tag-unstable {
             <td colspan="2">\(a\)</td>
             <td>\(\{a, a, \ldots\}\)</td>
         </tr>
+
         <tr>
             <td>IT</td>
-            <td data-doc-link="http://bluss.github.io/rust-itertools/doc/itertools/struct.RepeatCall.html#method.new">RepeatCall::new</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.repeat_call.html">repeat_call</td>
             <td colspan="2">\(f: () \rightarrow T\)</td>
             <td>\(\{f(), f(), \ldots\}\)</td>
+        </tr>
+
+        <tr>
+            <td>Std</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.repeat_n.html">repeat_n</td>
+            <td>\(a\),</td>
+            <td>\(n\)</td>
+            <td>\(\{\underbrace{a, a, \ldots, a}_{n}\}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.unfold.html">unfold</td>
+            <td>\(s:S\),</td>
+            <td>\(f: \text{&amp;mut } S \rightarrow \text{Some}(T) ~|~ \text{None}\)</td>
+            <td>\(
+                \{c_0, \ldots, c_{l-1}\} \text{ wh.} \\~~
+                    \text{Some}(c_0) = f(\text{&amp;mut } s), \\~~
+                    \ldots, \\~~
+                    \text{Some}(c_{l-1}) = f(\text{&amp;mut } s), \\~~
+                    \text{None} = f(\text{&amp;mut } s)
+            \)</td>
         </tr>
     </tbody>
     </table>
 
-    <h2>Sequences</h2>
+    <h2 id="sec-sequences">Sequences</h2>
 
     <table class="summary">
     <thead>
@@ -166,15 +221,6 @@ table.summary tr.tag-unstable {
         </tr>
     </thead>
     <tbody>
-        <tr class="cut-during-build">
-            <td>IT</td>
-            <td>batching</td>
-            <td>\(\{\underbrace{a_0, \ldots}_{{}\rightarrow c_0},
-                \underbrace{a_i,\ldots}_{{}\rightarrow c_1},
-                \ldots\}:\{T\}\),</td>
-            <td>\(batch : \text{&amp;mut }\{T\} \rightarrow U\)</td>
-            <td>\(\{c_0, c_1, \ldots\}:\{U\}\)</td>
-        </tr>
         <tr>
             <td>IT</td>
             <td>batching</td>
@@ -184,16 +230,6 @@ table.summary tr.tag-unstable {
             <td>\(batch : \text{&amp;mut }\{T\} \rightarrow U\)</td>
             <td>\(\{\underbrace{c_0}_{batch(\{a_0, \ldots\})},
                 \underbrace{c_1}_{batch(\{a_i, \ldots\})},
-                \ldots\}:\{U\}\)</td>
-        </tr>
-        <tr class="cut-during-build">
-            <td>IT</td>
-            <td>batching</td>
-            <td>\(\{\underbrace{a_0, \ldots, \underbrace{a_i, \ldots, \underbrace{a_j, \ldots}}}\}:\{T\}\),</td>
-            <td>\(batch : \text{&amp;mut }\{T\} \rightarrow U\)</td>
-            <td>\(\{\underbrace{c_0}_{batch(\{a_0, \ldots\})},
-                \underbrace{c_1}_{batch(\{a_i, \ldots\})},
-                \underbrace{c_2}_{batch(\{a_j, \ldots\})},
                 \ldots\}:\{U\}\)</td>
         </tr>
 
@@ -214,6 +250,38 @@ table.summary tr.tag-unstable {
             <td>\(\{a_0, \ldots, a_{n-1}\}\),</td>
             <td>\(\{b_0, \ldots, b_{m-1}\}\)</td>
             <td>\(\{a_0, \ldots, a_{n-1}, b_0, \ldots, b_{m-1}\}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>chunks</td>
+            <td>\(\{a_0, \ldots\}\),</td>
+            <td>\(m\)</td>
+            <td>\(
+                \{
+                    \{a_0, \ldots, a_{m-1}\},
+                    \{a_n, \ldots, a_{2m-1}\},
+                    \ldots
+                \}
+            \)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="3">Std</td>
+            <td rowspan="3">cmp</td>
+            <td>\(\{a_0, \ldots, a_{i}\}\),</td>
+            <td>\(\{b_0, \ldots, b_{i}, b_{i+1}, \underline{\ldots}\}\)</td>
+            <td>\(\text{cmp}(a_0, b_0) \text{ then } \ldots \text{ then } \text{cmp}(a_i, b_i) \text{ then } \text{Less}\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0, \ldots, a_{i}\}\),</td>
+            <td>\(\{b_0, \ldots, b_{i}\}\)</td>
+            <td>\(\text{cmp}(a_0, b_0) \text{ then } \ldots \text{ then } \text{cmp}(a_i, b_i) \text{ then } \text{Equal}\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0, \ldots, a_{i}, a_{i+1}, \underline{\ldots}\}\),</td>
+            <td>\(\{b_0, \ldots, b_{i}\}\)</td>
+            <td>\(\text{cmp}(a_0, b_0) \text{ then } \ldots \text{ then } \text{cmp}(a_i, b_i) \text{ then } \text{Greater}\)</td>
         </tr>
 
         <tr>
@@ -258,17 +326,6 @@ table.summary tr.tag-unstable {
             <td>collect_vec</td>
             <td colspan="2">\(\{a_0, \ldots\}\)</td>
             <td>\([a_0, \ldots] : \text{Vec}\langle T\rangle\)</td>
-        </tr>
-
-        <tr>
-            <td>IT</td>
-            <td>combinations</td>
-            <td colspan="2">\(\{a_0, a_1, a_2, \ldots, a_{n-2}, a_{n-1}\}\)</td>
-            <td>\(\{
-                (a_0, a_1), (a_0, a_2), \ldots, (a_0, a_{n-2}), (a_0, a_{n-1}),\\~~
-                (a_1, a_2), \ldots, (a_1, a_{n-2}), (a_1, a_{n-1}),\\~~
-                \ldots,\\~~
-                (a_{n-2}, a_{n-1})\}\)</td>
         </tr>
 
         <tr>
@@ -319,11 +376,22 @@ table.summary tr.tag-unstable {
         </tr>
 
         <tr>
+            <td rowspan="2">Std</td>
+            <td rowspan="2">eq</td>
+            <td rowspan="2">\(\{a_0, \ldots, a_{n-1}\}\),</td>
+            <td rowspan="2">\(\{b_0, \ldots, b_{m-1}\}\)</td>
+            <td>\(\text{false} \text{ wh. } n \neq m\)</td>
+        </tr>
+        <tr>
+            <td>\((a_0 = b_0) \land \ldots \land (a_{n-1} = b_{n-1})\)</td>
+        </tr>
+
+        <tr>
             <td>Std</td>
             <td>filter</td>
             <td>\(\{a_0, a_1, \ldots\}\),</td>
-            <td>\(p : \&amp;T \rightarrow \text{bool}\)</td>
-            <td>\(\{a_i \text{ for all } i \text{ wh. } p(\&amp;a_i)\}\)</td>
+            <td>\(p : \text{&amp;}T \rightarrow \text{bool}\)</td>
+            <td>\(\{a_i \text{ for all } i \text{ wh. } p(\text{&amp;}a_i)\}\)</td>
         </tr>
 
         <tr>
@@ -345,12 +413,30 @@ table.summary tr.tag-unstable {
 
         <tr>
             <td>IT</td>
+            <td>flatten</td>
+            <td colspan="2">\(\{\{a_0, \ldots\}, \{b_0, \ldots\}, \ldots\}\),</td>
+            <td>\(\{a_0, \ldots, b_0, \ldots\}\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="2">Std</td>
+            <td rowspan="2">ge</td>
+            <td rowspan="2">\(\{a_0, \ldots, a_{n-1}\}\),</td>
+            <td rowspan="2">\(\{b_0, \ldots, b_{m-1}\}\)</td>
+            <td>\(\text{false} \text{ wh. } n &lt; m\)</td>
+        </tr>
+        <tr>
+            <td>\((a_0 \geq b_0) \land \ldots \land (a_{n-1} \geq b_{n-1})\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
             <td>group_by</td>
             <td>\(\{\underbrace{a_0, \ldots, a_{i-1}}_{g(a_x) = g_0},
                 \underbrace{a_i, \ldots, a_{j-1}}_{g(a_y) = g_1 \ne g_0},
                 \underbrace{a_j, \ldots, a_{k-1}}_{g(a_z) = g_2 \ne g_1},
                 \ldots\}\),</td>
-            <td>\(g : \&amp;T \rightarrow G\)</td>
+            <td>\(g : \text{&amp;}T \rightarrow G\)</td>
             <td>\(
                 \{
                     (g_0, [a_0, \ldots, a_{i-1}]),\\~~
@@ -368,7 +454,7 @@ table.summary tr.tag-unstable {
                 \underbrace{a_i, \ldots, a_{j-1}}_{g(a_y) = g_1 \ne g_0},
                 \underbrace{a_j, \ldots, a_{k-1}}_{g(a_z) = g_2 \ne g_1},
                 \ldots\}\),</td>
-            <td>\(g : \&amp;T \rightarrow G\)</td>
+            <td>\(g : \text{&amp;}T \rightarrow G\)</td>
             <td>\(
                 \{
                     (g_0, \{a_0, \ldots, a_{i-1}\}),\\~~
@@ -380,19 +466,30 @@ table.summary tr.tag-unstable {
         </tr>
 
         <tr>
+            <td rowspan="2">Std</td>
+            <td rowspan="2">gt</td>
+            <td rowspan="2">\(\{a_0, \ldots, a_{n-1}\}\),</td>
+            <td rowspan="2">\(\{b_0, \ldots, b_{m-1}\}\)</td>
+            <td>\(\text{false} \text{ wh. } n &lt; m\)</td>
+        </tr>
+        <tr>
+            <td>\((a_0 &gt; b_0) \land \ldots \land (a_{n-1} &gt; b_{n-1})\)</td>
+        </tr>
+
+        <tr>
             <td rowspan="3">IT</td>
             <td rowspan="3">interleave</td>
-            <td>\(\{a_0, a_1, \ldots, a_{i-1}, a_i, \ldots\}\)</td>
+            <td>\(\{a_0, a_1, \ldots, a_{i-1}, a_i, \ldots\}\),</td>
             <td>\(\{b_0, b_1, \ldots, b_{i-1}\}\)</td>
             <td>\(\{a_0, b_0, a_1, b_1, \ldots, a_{i-1}, b_{i-1}, a_i, \ldots\}\)</td>
         </tr>
         <tr>
-            <td>\(\{a_0, a_1, \ldots, a_{i-1}\}\)</td>
+            <td>\(\{a_0, a_1, \ldots, a_{i-1}\}\),</td>
             <td>\(\{b_0, b_1, \ldots, b_{i-1}\}\)</td>
             <td>\(\{a_0, b_0, a_1, b_1, \ldots, a_{i-1}, b_{i-1}\}\)</td>
         </tr>
         <tr>
-            <td>\(\{a_0, a_1, \ldots, a_{i-1}\}\)</td>
+            <td>\(\{a_0, a_1, \ldots, a_{i-1}\}\),</td>
             <td>\(\{b_0, b_1, \ldots, b_{i-1}, b_i, \ldots\}\)</td>
             <td>\(\{a_0, b_0, a_1, b_1, \ldots, a_{i-1}, b_{i-1}, b_i, \ldots\}\)</td>
         </tr>
@@ -400,7 +497,7 @@ table.summary tr.tag-unstable {
         <tr>
             <td rowspan="2">IT</td>
             <td rowspan="2">interleave_shortest</td>
-            <td>\(\{a_0, a_1, \ldots, a_{i-1}, a_i, \underline{\ldots}\}\)</td>
+            <td>\(\{a_0, a_1, \ldots, a_{i-1}, a_i, \underline{\ldots}\}\),</td>
             <td>\(\{b_0, b_1, \ldots, b_{i-1}\}\)</td>
             <td>\(\{a_0, b_0, a_1, b_1, \ldots, a_{i-1}, b_{i-1}, a_i\}\)</td>
         </tr>
@@ -416,6 +513,51 @@ table.summary tr.tag-unstable {
             <td>\(\{a_0, a_1, \ldots, a_{n-1}\}\)</td>
             <td>\(b\)</td>
             <td>\(\{a_0, b, a_1, b, \ldots, b, a_{n-1}\}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>kmerge</td>
+            <td colspan="2">\(
+                \{
+                    \{a_0, \ldots\},
+                    \{b_0, \ldots\},
+                    \ldots
+                \}
+                \text{ wh.} \\~~
+                \text{sorted}(a), \text{ sorted}(b), \ldots
+            \)</td>
+            <td>\(\{
+                c_0, c_1, \ldots
+            \} \text{ wh. }
+                c_0 \le c_1 \le \ldots, \\~~
+                a \subseteq c,
+                b \subseteq c,
+                \ldots
+            \)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>kmerge_by</td>
+            <td>\(
+                \{
+                    \{a_0, \ldots\},
+                    \{b_0, \ldots\},
+                    \ldots
+                \}
+                \text{ wh.} \\~~
+                \text{sorted_by}(a, {}\circ{}), \text{ sorted_by}(b, {}\circ{}), \ldots
+            \),</td>
+            <td>\({}\circ{} : (\text{&amp;}T,\text{&amp;}T) \rightarrow \text{bool}\)</td>
+            <td>\(\{
+                c_0, c_1, \ldots
+            \} \text{ wh. }
+                c_0 \circ c_1 \circ \ldots, \\~~
+                a \subseteq c,
+                b \subseteq c,
+                \ldots
+            \)</td>
         </tr>
 
         <tr>
@@ -436,13 +578,24 @@ table.summary tr.tag-unstable {
 
         <tr>
             <td>IT</td>
+            <td>map_results</td>
+            <td>\(\{a_0, \ldots\} : \{\text{Ok}(T) ~|~ \text{Err}(E)\}\),</td>
+            <td>\(f : (T) \rightarrow U\)</td>
+            <td>\(\{
+                a_0.\text{map}(f),
+                \ldots
+            \} : \{\text{Ok}(U) ~|~ \text{Err}(E)\}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
             <td>mend_slices</td>
             <td colspan="2">
                 \(
                     \{
-                        \&amp;[x_0, \ldots, x_{i-1}], \&amp;[x_i, \ldots, x_{n-1}],\\~~
-                        \&amp;[y_0, \ldots, y_{m-1}],\\~~
-                        \&amp;[z_0, \ldots, z_{l-1}],
+                        \text{&amp;}[x_0, \ldots, x_{i-1}], \text{&amp;}[x_i, \ldots, x_{n-1}],\\~~
+                        \text{&amp;}[y_0, \ldots, y_{m-1}],\\~~
+                        \text{&amp;}[z_0, \ldots, z_{l-1}],
                         \ldots
                     \}
                 \)
@@ -450,9 +603,9 @@ table.summary tr.tag-unstable {
             <td>
                 \(
                     \{
-                        \&amp;[x_0, \ldots, x_{i-1}, x_i, \ldots, x_{n-1}],\\~~
-                        \&amp;[y_0, \ldots, y_{m-1}],\\~~
-                        \&amp;[z_0, \ldots, z_{l-1}],
+                        \text{&amp;}[x_0, \ldots, x_{i-1}, x_i, \ldots, x_{n-1}],\\~~
+                        \text{&amp;}[y_0, \ldots, y_{m-1}],\\~~
+                        \text{&amp;}[z_0, \ldots, z_{l-1}],
                         \ldots
                     \}
                 \)
@@ -472,17 +625,55 @@ table.summary tr.tag-unstable {
             <td rowspan="1">merge_by</td>
             <td rowspan="1">\(\{a_0, a_1, \ldots\} \text{ wh. } a_0 \circ a_1 \circ \ldots\),</td>
             <td rowspan="1">\(\{b_0, b_1, \ldots\} \text{ wh. } b_0 \circ b_1 \circ \ldots\),
-                \({}\circ{} : (\&amp;T,\&amp;T) -> \text{Ordering}\)</td>
+                \({}\circ{} : (\text{&amp;}T,\text{&amp;}T) \rightarrow \text{Ordering}\)</td>
             <td>\(\{c_0, c_1, \ldots\} \text{ wh. } c_0 \circ c_1 \circ \ldots, a \subseteq c, b \subseteq c\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>pad_using</td>
+            <td>\(\{a_0, \ldots, a_{n-1}\}\),</td>
+            <td>\(m\), \(~~\) \(f : i \rightarrow T\)</td>
+            <td>\(
+                \{a_0, \ldots, a_{n-1}\} \text{ wh. } n >= m \\
+                \{a_0, \ldots, a_{n-1}, f(n), \ldots, f(m-1)\} \text{ otherwise}
+            \)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="3">Std</td>
+            <td rowspan="3">partial_cmp</td>
+            <td>\(\{a_0, \ldots, a_{i}\}\),</td>
+            <td>\(\{b_0, \ldots, b_{i}, b_{i+1}, \underline{\ldots}\}\)</td>
+            <td>\(\text{pcmp}(a_0, b_0) \text{ then } \ldots \text{ then } \text{pcmp}(a_i, b_i) \text{ then } \text{Less}\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0, \ldots, a_{i}\}\),</td>
+            <td>\(\{b_0, \ldots, b_{i}\}\)</td>
+            <td>\(\text{pcmp}(a_0, b_0) \text{ then } \ldots \text{ then } \text{pcmp}(a_i, b_i) \text{ then } \text{Equal}\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0, \ldots, a_{i}, a_{i+1}, \underline{\ldots}\}\),</td>
+            <td>\(\{b_0, \ldots, b_{i}\}\)</td>
+            <td>\(\text{pcmp}(a_0, b_0) \text{ then } \ldots \text{ then } \text{pcmp}(a_i, b_i) \text{ then } \text{Greater}\)</td>
         </tr>
 
         <tr>
             <td>Std</td>
             <td>partition</td>
-            <td>\(\{a_0, a_1, \ldots\}\)</td>
+            <td>\(\{a_0, a_1, \ldots\}\),</td>
             <td>\(f: \text{&amp;}T \rightarrow \text{bool}\)</td>
-            <td>\(([a_i \text{ for all } i \text{ wh. } f(\&amp;a_i) = \text{true}], \\~~
-                [a_i \text{ for all } i \text{ wh. } f(\&amp;a_i) = \text{false}])\)</td>
+            <td>\(([a_i \text{ for all } i \text{ wh. } f(\text{&amp;}a_i) = \text{true}], \\~~
+                [a_i \text{ for all } i \text{ wh. } f(\text{&amp;}a_i) = \text{false}])\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>partition_map</td>
+            <td>\(\{a_0, a_1, \ldots\}\),</td>
+            <td>\(f: T \rightarrow \text{Left}(L) ~|~ \text{Right}(R)\)</td>
+            <td>\(([x_i \text{ for all } i \text{ wh. } f(a_i) = \text{Left}(x_i)], \\~~
+                [x_i \text{ for all } i \text{ wh. } f(a_i) = \text{Right}(x_i)])\)</td>
         </tr>
 
         <tr>
@@ -517,8 +708,8 @@ table.summary tr.tag-unstable {
             <td>Std</td>
             <td>skip_while</td>
             <td>\(\{a_0, \ldots, a_i, \ldots\}\),</td>
-            <td>\(p : \&amp;T \rightarrow \text{bool}\)</td>
-            <td>\(\{a_i, \ldots\} \text{ wh. } i \text{ is first wh. } p(\&amp;a_i) \)</td>
+            <td>\(p : \text{&amp;}T \rightarrow \text{bool}\)</td>
+            <td>\(\{a_i, \ldots\} \text{ wh. } i \text{ is first wh. } p(\text{&amp;}a_i) \)</td>
         </tr>
 
         <tr>
@@ -536,6 +727,23 @@ table.summary tr.tag-unstable {
             <td>\(\{a_0, \ldots, a_i, \ldots, \underline{a_j, \ldots}\}\),</td>
             <td>\(i..j\)</td>
             <td>\(\{a_i, \ldots, a_{j-1}\}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>sorted</td>
+            <td colspan="2">\(\{a_0, \ldots\}\)</td>
+            <td>\([c_0, \ldots] : \text{Vec}\langle T\rangle \text { wh. }
+                c_0 \leq c_1 \leq \ldots\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>sorted_by</td>
+            <td>\(\{a_0, \ldots\}\)</td>
+            <td>\({}\circ{} : (\text{&amp;}T,\text{&amp;}T) \rightarrow \text{Ordering}\)</td>
+            <td>\([c_0, \ldots] : \text{Vec}\langle T\rangle \text { wh. }
+                c_0 \circ c_1 \circ \ldots\)</td>
         </tr>
 
         <tr>
@@ -563,16 +771,16 @@ table.summary tr.tag-unstable {
             <td>Std</td>
             <td>take_while</td>
             <td>\(\{a_0, \ldots, a_{i-1}, a_i, \underline{\ldots}\}\),</td>
-            <td>\(p : \&amp;T \rightarrow \text{bool}\)</td>
-            <td>\(\{a_0, \ldots, a_{i-1}\} \text{ wh. } i \text{ is first wh. } p(\&amp;a_i) = \text{false} \)</td>
+            <td>\(p : \text{&amp;}T \rightarrow \text{bool}\)</td>
+            <td>\(\{a_0, \ldots, a_{i-1}\} \text{ wh. } i \text{ is first wh. } p(\text{&amp;}a_i) = \text{false} \)</td>
         </tr>
 
         <tr>
             <td>IT</td>
             <td>take_while_ref</td>
             <td>\(\text{&amp;mut }\{a_0, \ldots, a_{i-1}, \underline{a_i, \ldots}\}\),</td>
-            <td>\(p : \&amp;T \rightarrow \text{bool}\)</td>
-            <td>\(\{a_0, \ldots, a_{i-1}\} \text{ wh. } i \text{ is first wh. } p(\&amp;a_i) = \text{false} \)</td>
+            <td>\(p : \text{&amp;}T \rightarrow \text{bool}\)</td>
+            <td>\(\{a_0, \ldots, a_{i-1}\} \text{ wh. } i \text{ is first wh. } p(\text{&amp;}a_i) = \text{false} \)</td>
         </tr>
 
         <tr>
@@ -580,6 +788,49 @@ table.summary tr.tag-unstable {
             <td>tee</td>
             <td colspan="2">\(\{a_0, a_1, \ldots\}\)</td>
             <td>\((\{a_0, a_1, \ldots\}, \{a_0, a_1, \ldots\})\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>tuple_windows</td>
+            <td>\(\{a_0, \ldots\}\)</td>
+            <td>\(\langle (\underbrace{\_, \_, \ldots}_{n})\rangle \)</td>
+            <td>\(\{
+                (a_0, \ldots, a_{n-1}),
+                (a_1, \ldots, a_{n}),
+                \ldots
+            \}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>tuples</td>
+            <td>\(\{a_0, \ldots\}\)</td>
+            <td>\(\langle (\underbrace{\_, \_, \ldots}_{n})\rangle \)</td>
+            <td>\(\{
+                (a_0, \ldots, a_{n-1}),
+                (a_{n}, \ldots, a_{2n-1}),
+                \ldots
+            \}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>unique</td>
+            <td colspan="2">\(\{a_0, \ldots\}\)</td>
+            <td>\(\{
+                a_i \text{ for all } i \text{ wh. } a_i \notin \{a_0, \ldots, a_{i-1}\}
+            \}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>unique_by</td>
+            <td>\(\{a_0, \ldots\}\),</td>
+            <td>\(f : \text{&amp;}T \rightarrow U\)</td>
+            <td>\(\{
+                a_i \text{ for all } i \text{ wh. } f(a_i) \notin \{f(a_0), \ldots, f(a_{i-1})\}
+            \}\)</td>
         </tr>
 
         <tr>
@@ -603,6 +854,20 @@ table.summary tr.tag-unstable {
         </tr>
 
         <tr>
+            <td rowspan="2">IT</td>
+            <td rowspan="2">with_position</td>
+            <td colspan="2">\(\{a_0\}\)</td>
+            <td>\(\{\text{Only}(a_0)\}\)</td>
+        </tr>
+        <tr>
+            <td colspan="2">\(\{a_0, a_1, \ldots, a_{n-2}, a_{n-1}\}\)</td>
+            <td>\(\{
+                \text{First}(a_0), \text{Middle}(a_1), \ldots, \\~~
+                \text{Middle}(a_{n-2}), \text{Last}(a_{n-1})
+            \}\)</td>
+        </tr>
+
+        <tr>
             <td rowspan="2">Std</td>
             <td rowspan="2">zip</td>
             <td>\(\{a_0, \ldots, a_i\}\),</td>
@@ -615,26 +880,99 @@ table.summary tr.tag-unstable {
         </tr>
 
         <tr>
+            <td>IT</td>
+            <td>zip_eq</td>
+            <td>\(\{a_0, \ldots, a_{n-1}\}\),</td>
+            <td>\(\{b_0, \ldots, b_{m-1}\}\)</td>
+            <td>\(\{(a_0, b_0), \ldots, (a_{n-1}, b_{n-1})\}, \\~~
+                \text{panic wh. } n \neq m\)</td>
+        </tr>
+
+        <tr>
             <td rowspan="3">IT</td>
             <td rowspan="3">zip_longest</td>
-            <td>\(\{a_0, \ldots, a_{i-1}, a_i, \ldots\}\)</td>
+            <td>\(\{a_0, \ldots, a_{i-1}, a_i, \ldots\}\),</td>
             <td>\(\{b_0, \ldots, b_{i-1}\}\)</td>
             <td>\(\{\text{Both}(a_0, b_0), \ldots, \text{Both}(a_{i-1}, b_{i-1}), \text{Left}(a_i), \ldots\}\)</td>
         </tr>
         <tr>
-            <td>\(\{a_0, \ldots, a_{i-1}\}\)</td>
+            <td>\(\{a_0, \ldots, a_{i-1}\}\),</td>
             <td>\(\{b_0, \ldots, b_{i-1}\}\)</td>
             <td>\(\{\text{Both}(a_0, b_0), \ldots, \text{Both}(a_{i-1}, b_{i-1})\}\)</td>
         </tr>
         <tr>
-            <td>\(\{a_0, \ldots, a_{i-1}\}\)</td>
+            <td>\(\{a_0, \ldots, a_{i-1}\}\),</td>
             <td>\(\{b_0, \ldots, b_{i-1}, b_i, \ldots\}\)</td>
             <td>\(\{\text{Both}(a_0, b_0), \ldots, \text{Both}(a_{i-1}, b_{i-1}), \text{Right}(b_i), \ldots\}\)</td>
         </tr>
     </tbody>
     </table>
 
-    <h2>Values</h2>
+    <h2 id="sec-free-standing-sequences">Free-Standing Sequences</h2>
+
+    <p><strong>Note</strong>: these adaptors are only available as free-standing functions, <em>not</em> as methods on <code>Iterator</code>s.</p>
+
+    <table class="summary">
+    <thead>
+        <tr>
+            <th>Lib</th>
+            <th>Function</th>
+            <th colspan="2">Input</th>
+            <th>Output</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.cons_tuples.html">cons_tuples</td>
+            <td colspan="2">
+                \(\{
+                    ((a^0_0, a^1_0, \ldots), a^n_0),
+                    ((a^0_1, a^1_1, \ldots), a^n_1),
+                    \ldots
+                \}\)
+            </td>
+            <td>\(\{
+                (a^0_0, a^1_0, \ldots, a^n_0),
+                (a^0_1, a^1_1, \ldots, a^n_1),
+                \ldots
+            \}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/macro.iproduct.html">iproduct!</td>
+            <td colspan="2">
+                <div class="flex-cell">
+                    <div>\(\{a_0, a_1, \ldots\}\),</div>
+                    <div>\(\{b_0, b_1, \ldots\}\),</div>
+                    <div>\(\ldots\)</div>
+                </div>
+            </td>
+            <td>\(\{
+                (a_0, b_0, \ldots), \ldots,
+                (a_0, b_1, \ldots), \ldots, \\~~
+                (a_1, b_0, \ldots), \ldots,
+                (a_1, b_1, \ldots), \ldots
+            \}\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/macro.izip.html">izip!</td>
+            <td colspan="2">
+                <div class="flex-cell">
+                    <div>\(\{a_0, a_1, \ldots\}\),</div>
+                    <div>\(\{b_0, b_1, \ldots\}\),</div>
+                    <div>\(\ldots\)</div>
+                </div>
+            </td>
+            <td>\(\{(a_0, b_0, \ldots), (a_1, b_1, \ldots), \ldots\}\)</td>
+        </tr>
+    </tbody>
+    </table>
+
+    <h2 id="sec-values">Values</h2>
 
     <table class="summary">
     <thead>
@@ -697,7 +1035,7 @@ table.summary tr.tag-unstable {
             <td>\(p : T \rightarrow \text{bool}\)</td>
             <td>
                 \(\begin{array}{ll}
-                    \text{Some}(a_i) &amp;\text{wh. } i \text{ is first wh. } p(\&amp;a_i) \\
+                    \text{Some}(a_i) &amp;\text{wh. } i \text{ is first wh. } p(\text{&amp;}a_i) \\
                     \text{None} &amp; \text{otherwise}
                 \end{array}\)
             </td>
@@ -710,7 +1048,7 @@ table.summary tr.tag-unstable {
             <td>\(p : T \rightarrow \text{bool}\)</td>
             <td>
                 \(\begin{array}{ll}
-                    \text{Some}((i, a_i)) &amp;\text{wh. } i \text{ is first wh. } p(\&amp;a_i) \\
+                    \text{Some}((i, a_i)) &amp;\text{wh. } i \text{ is first wh. } p(\text{&amp;}a_i) \\
                     \text{None} &amp; \text{otherwise}
                 \end{array}\)
             </td>
@@ -746,9 +1084,35 @@ table.summary tr.tag-unstable {
 
         <tr>
             <td rowspan="3">IT</td>
+            <td rowspan="3">fold_options</td>
+            <td>\(\text{&amp;mut }\{a_0, \ldots\}\),</td>
+            <td rowspan="3">\(start : U\), \(\circ : (U,T) \rightarrow U\)</td>
+            <td>
+                \(
+                    \text{Some}(\text{fold}(x, \circ)) \text{ wh. }
+                        x = \{x_i \text{ wh. all } a_i = \text{Some}(x_i)\}
+                \)
+            </td>
+        </tr>
+        <tr>
+            <td>\(\text{&amp;mut }\{\ldots, a_i, \underline{\ldots}\} \text{ wh. } a_i = \text{None}\),</td>
+            <td>
+                \(
+                    \text{None} \text{ wh. }
+                        i \text{ is first wh. } a_i = \text{None}
+                \)
+            </td>
+        </tr>
+        <tr>
+            <td>\(\text{&amp;mut }\{\}\)</td>
+            <td>\(\text{Some}(start)\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="3">IT</td>
             <td rowspan="3">fold_results</td>
             <td>\(\text{&amp;mut }\{a_0, \ldots\}\),</td>
-            <td rowspan="3">\(init : U\), \(\circ : (U,T) \rightarrow U\)</td>
+            <td rowspan="3">\(start : U\), \(\circ : (U,T) \rightarrow U\)</td>
             <td>
                 \(
                     \text{Ok}(\text{fold}(x, \circ)) \text{ wh. }
@@ -767,7 +1131,47 @@ table.summary tr.tag-unstable {
         </tr>
         <tr>
             <td>\(\text{&amp;mut }\{\}\)</td>
-            <td>\(\text{Ok}(init)\)</td>
+            <td>\(\text{Ok}(start)\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="3">IT</td>
+            <td rowspan="3">fold_while</td>
+            <td>\(\{a_0, \ldots, a_{n-1}\}\),</td>
+            <td rowspan="3">
+                \(init : U\),
+                \(\circ : (U,T) \rightarrow \text{Continue}(U) ~|~ \text{Done}(U)\),
+            </td>
+            <td>\(
+                ((init \circ x_0) \circ \ldots) \circ x_{n-1}
+                \text{ wh. } a_j = \text{Continue}(x_j)
+            \)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0, \ldots, a_{j}, \underline{\ldots}\}\),</td>
+            <td>\(
+                ((init \circ x_0) \circ \ldots) \circ x_{i} \text{ wh. } \\~~
+                    a_i = \text{Done}(x_i), \\~~
+                    a_j = \text{Continue}(x_j) \text{ for all } j < i
+            \)</td>
+        </tr>
+        <tr>
+            <td>\(\{\}\)</td>
+            <td>\(init\)</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>join</td>
+            <td>\(\{a_0, a_1, \ldots, a_{n-1}\}\),</td>
+            <td>\(sep: \text{&amp;str}\)</td>
+            <td>\(
+                \begin{array}{ll}
+                d(a_0) \circ sep \circ d(a_1) \circ \ldots \circ sep \circ d(a_{n-1}) \text { wh.}\\~~
+                d \text{ is Display::fmt, } \circ \text{ is string concatenation} \\
+                \end{array}
+                \)
+            </td>
         </tr>
 
         <tr>
@@ -782,19 +1186,26 @@ table.summary tr.tag-unstable {
         </tr>
 
         <tr>
-            <td>IT</td>
-            <td>join</td>
-            <td>\(\{a_0, a_1, \ldots\, a_{n-1}\}\),</td>
-            <td>\(sep: \text{&amp;str}\)</td>
-            <td>\(
-                \begin{array}{ll}
-                d(a_0) \circ sep \circ d(a_1) \circ \ldots \circ sep \circ d(a_{n-1}) \text { wh.}\\~~
-                d \text{ is Display::fmt, } \circ \text{ is string concatenation} \\
-                \end{array}
-                \)
-            </td>
+            <td rowspan="2">Std</td>
+            <td rowspan="2">le</td>
+            <td rowspan="2">\(\{a_0, \ldots, a_{n-1}\}\),</td>
+            <td rowspan="2">\(\{b_0, \ldots, b_{m-1}\}\)</td>
+            <td>\(\text{false} \text{ wh. } n &gt; m\)</td>
+        </tr>
+        <tr>
+            <td>\((a_0 \leq b_0) \land \ldots \land (a_{n-1} \leq b_{n-1})\)</td>
         </tr>
 
+        <tr>
+            <td rowspan="2">Std</td>
+            <td rowspan="2">lt</td>
+            <td rowspan="2">\(\{a_0, \ldots, a_{n-1}\}\),</td>
+            <td rowspan="2">\(\{b_0, \ldots, b_{m-1}\}\)</td>
+            <td>\(\text{false} \text{ wh. } n &gt; m\)</td>
+        </tr>
+        <tr>
+            <td>\((a_0 &lt; b_0) \land \ldots \land (a_{n-1} &lt; b_{n-1})\)</td>
+        </tr>
 
         <tr>
             <td rowspan="3">Std</td>
@@ -811,18 +1222,35 @@ table.summary tr.tag-unstable {
             <td>\(\text{None}\)</td>
         </tr>
 
-        <tr data-tags="unstable">
+        <tr>
             <td rowspan="3">Std</td>
             <td rowspan="3">max_by</td>
             <td>\(\{a_0, \ldots\}\)</td>
-            <td rowspan="3">\(f : \&amp;T \rightarrow B\)</td>
-            <td>\(\text{Some}(a_i) : b = max(\{f(a_0), \ldots\}), i \text{ is the last wh. } f(a_i) = b\)</td>
+            <td rowspan="3">\({}\circ{} : (\text{&amp;}T, \text{&amp;}T) \rightarrow \text{Ordering}\)</td>
+            <td>\(\text{Some}(a_j) \text{ wh. } \ldots \circ a_i \circ a_j\)</td>
         </tr>
-        <tr data-tags="unstable">
+        <tr>
             <td>\(\{a_0\}\)</td>
             <td>\(\text{Some}(a_0)\)</td>
         </tr>
-        <tr data-tags="unstable">
+        <tr>
+            <td>\(\{\}\)</td>
+            <td>\(\text{None}\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="3">Std</td>
+            <td rowspan="3">max_by_key</td>
+            <td>\(\{a_0, \ldots\}\)</td>
+            <td rowspan="3">\(f : \text{&amp;}T \rightarrow B\)</td>
+            <td>\(\text{Some}(a_i) \text{ wh.}\\~~
+            b = max(\{f(a_0), \ldots\}), i \text{ is the last wh. } f(a_i) = b\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0\}\)</td>
+            <td>\(\text{Some}(a_0)\)</td>
+        </tr>
+        <tr>
             <td>\(\{\}\)</td>
             <td>\(\text{None}\)</td>
         </tr>
@@ -842,35 +1270,107 @@ table.summary tr.tag-unstable {
             <td>\(\text{None}\)</td>
         </tr>
 
-        <tr data-tags="unstable">
+        <tr>
+            <td rowspan="3">IT</td>
+            <td rowspan="3">minmax</td>
+            <td colspan="2">\(\{\}\)</td>
+            <td>\(\text{NoElements}\)</td>
+        </tr>
+        <tr>
+            <td colspan="2">\(\{a_0\}\)</td>
+            <td>\(\text{OneElement}(a_0)\)</td>
+        </tr>
+        <tr>
+            <td colspan="2">\(\{a_0, \ldots\}\)</td>
+            <td>\(\text{MinMax}(\text{min}(a), \text{max}(a))\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="3">IT</td>
+            <td rowspan="3">minmax_by</td>
+            <td>\(\{\}\),</td>
+            <td rowspan="3">\({}\circ{} : (\text{&amp;}T,\text{&amp;}T) \rightarrow \text{Ordering}\)</td>
+            <td>\(\text{NoElements}\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0\}\)</td>
+            <td>\(\text{OneElement}(a_0)\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0, \ldots\}\)</td>
+            <td>\(\text{MinMax}(\text{min_by}(a, {}\circ{}), \text{max_by}(a, {}\circ{}))\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="3">IT</td>
+            <td rowspan="3">minmax_by_key</td>
+            <td>\(\{\}\),</td>
+            <td rowspan="3">\(f : \text{&amp;}T \rightarrow K\)</td>
+            <td>\(\text{NoElements}\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0\}\)</td>
+            <td>\(\text{OneElement}(a_0)\)</td>
+        </tr>
+        <tr>
+            <td>\(\{a_0, \ldots\}\)</td>
+            <td>\(\text{MinMax}(\text{min_by_key}(a, f), \text{max_by_key}(a, f))\)</td>
+        </tr>
+
+        <tr>
             <td rowspan="3">Std</td>
             <td rowspan="3">min_by</td>
             <td>\(\{a_0, \ldots\}\)</td>
-            <td rowspan="3">\(f : \&amp;T \rightarrow B\)</td>
-            <td>\(\text{Some}(a_i) : b = min(\{f(a_0), \ldots\}), i \text{ is the first wh. } f(a_i) = b\)</td>
+            <td rowspan="3">\({}\circ{} : (\text{&amp;}T, \text{&amp;}T) \rightarrow \text{Ordering}\)</td>
+            <td>\(\text{Some}(a_i) \text{ wh. } a_i \circ a_j \circ \ldots\)</td>
         </tr>
-        <tr data-tags="unstable">
+        <tr>
             <td>\(\{a_0\}\)</td>
             <td>\(\text{Some}(a_0)\)</td>
         </tr>
-        <tr data-tags="unstable">
+        <tr>
             <td>\(\{\}\)</td>
             <td>\(\text{None}\)</td>
         </tr>
 
-        <tr data-tags="unstable">
+        <tr>
             <td rowspan="3">Std</td>
-            <td rowspan="3">min_max</td>
-            <td colspan="2">\(\{a_0, \ldots\}\)</td>
-            <td>\(\text{MinMax}(min(\{a_0, \ldots\}), max(\{a_0, \ldots\}))\)</td>
+            <td rowspan="3">min_by_key</td>
+            <td>\(\{a_0, \ldots\}\)</td>
+            <td rowspan="3">\(f : \text{&amp;}T \rightarrow B\)</td>
+            <td>\(\text{Some}(a_i) \text{ wh.}\\~~
+            b = min(\{f(a_0), \ldots\}), i \text{ is the last wh. } f(a_i) = b\)</td>
         </tr>
-        <tr data-tags="unstable">
-            <td colspan="2">\(\{a_0\}\)</td>
-            <td>\(\text{OneElement}(a_0)\)</td>
+        <tr>
+            <td>\(\{a_0\}\)</td>
+            <td>\(\text{Some}(a_0)\)</td>
         </tr>
-        <tr data-tags="unstable">
-            <td colspan="2">\(\{\}\)</td>
-            <td>\(\text{NoElements}\)</td>
+        <tr>
+            <td>\(\{\}\)</td>
+            <td>\(\text{None}\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="2">Std</td>
+            <td rowspan="2">ne</td>
+            <td rowspan="2">\(\{a_0, \ldots, a_{n-1}\}\),</td>
+            <td rowspan="2">\(\{b_0, \ldots, b_{m-1}\}\),</td>
+            <td>\(\text{true} \text{ wh. } n \neq m\)</td>
+        </tr>
+        <tr>
+            <td>\((a_0 \neq b_0) \land \ldots \land (a_{n-1} \neq b_{n-1})\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="2">IT</td>
+            <td rowspan="2">next_tuple</td>
+            <td>\(\text{&amp;mut }\{a_0, \ldots, a_{n-1}\}\)</td>
+            <td rowspan="2">\(\langle (\underbrace{\_, \_, \ldots}_{m})\rangle \)</td>
+            <td>\(\text{None} \text{ wh. } n < m\)</td>
+        </tr>
+        <tr>
+            <td>\(\text{&amp;mut }\{a_0, \ldots, a_{m-1}, a_{m}, \ldots\}\)</td>
+            <td>\(\text{Some}((a_0, \ldots, a_{n-1}))\)</td>
         </tr>
 
         <tr>
@@ -893,23 +1393,23 @@ table.summary tr.tag-unstable {
             <td>\(p : T \rightarrow \text{bool}\)</td>
             <td>
                 \(\begin{array}{ll}
-                    \text{Some}(i) &amp;\text{wh. } i \text{ is first wh. } p(\&amp;a_i) \\
+                    \text{Some}(i) &amp;\text{wh. } i \text{ is first wh. } p(\text{&amp;}a_i) \\
                     \text{None} &amp; \text{otherwise}
                 \end{array}\)
             </td>
         </tr>
 
-        <tr data-tags="unstable">
+        <tr>
             <td rowspan="3">Std</td>
             <td rowspan="3">product</td>
             <td colspan="2">\(\{a_0, a_1, \ldots\}\)</td>
             <td>\(((a_0 \times a_1) \times \ldots)\)</td>
         </tr>
-        <tr data-tags="unstable">
+        <tr>
             <td colspan="2">\(\{a_0\}\)</td>
             <td>\(a_0\)</td>
         </tr>
-        <tr data-tags="unstable">
+        <tr>
             <td colspan="2">\(\{\}\)</td>
             <td>\(1\)</td>
         </tr>
@@ -921,7 +1421,7 @@ table.summary tr.tag-unstable {
             <td>\(p : T \rightarrow \text{bool}\)</td>
             <td>
                 \(\begin{array}{ll}
-                    \text{Some}(i) &amp;\text{wh. } i \text{ is last wh. } p(\&amp;a_i) \\
+                    \text{Some}(i) &amp;\text{wh. } i \text{ is last wh. } p(\text{&amp;}a_i) \\
                     \text{None} &amp; \text{otherwise}
                 \end{array}\)
             </td>
@@ -943,24 +1443,24 @@ table.summary tr.tag-unstable {
             <td>\(\{b_0, \ldots, b_{i-1}, \underline{b_i, \ldots}\} : \{T\}\)</td>
         </tr>
 
-        <tr data-tags="unstable">
+        <tr>
             <td rowspan="3">Std</td>
             <td rowspan="3">sum</td>
             <td colspan="2">\(\{a_0, a_1, \ldots\}\)</td>
             <td>\(((a_0 + a_1) + \ldots)\)</td>
         </tr>
-        <tr data-tags="unstable">
+        <tr>
             <td colspan="2">\(\{a_0\}\)</td>
             <td>\(a_0\)</td>
         </tr>
-        <tr data-tags="unstable">
+        <tr>
             <td colspan="2">\(\{\}\)</td>
             <td>\(0\)</td>
         </tr>
     </tbody>
     </table>
 
-    <h2>Other</h2>
+    <h2 id="sec-other">Other</h2>
 
     <table class="summary">
     <thead>
@@ -972,9 +1472,9 @@ table.summary tr.tag-unstable {
     </thead>
     <tbody>
         <tr>
-            <td>Std</td>
-            <td>cloned</td>
-            <td>Returns an iterator which calls <code>Clone::clone</code> on each element of the input.  This is commonly used to turn an <code>Iterator&lt;Item=&amp;T></code> into an <code>Iterator&lt;Item=T></code>.</td>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.assert_equal.html">assert_equal</td>
+            <td>Ensures the items in two iterators match exactly, panicking with a descriptive message on how and where they differ.</td>
         </tr>
 
         <tr>
@@ -984,9 +1484,39 @@ table.summary tr.tag-unstable {
         </tr>
 
         <tr>
+            <td>Std</td>
+            <td>cloned</td>
+            <td>Returns an iterator which calls <code>Clone::clone</code> on each element of the input.  This is commonly used to turn an <code>Iterator&lt;Item=&amp;T></code> into an <code>Iterator&lt;Item=T></code>.</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>combinations</td>
+            <td>Returns all in-order, unique combinations of length \(n\) without replacement.  Each combination is a <code>Vec</code> of length \(n\).</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.diff_with.html">diff_with</td>
+            <td>Determines where and how two iterators differ.</td>
+        </tr>
+
+        <tr>
             <td>IT</td>
             <td>foreach</td>
             <td>Eagerly executes a closure \(f\) on each element of the sequence.</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>format</td>
+            <td>Returns a thunk which formats each item in the iterator, separated by \(\text{sep}\).</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>format_with</td>
+            <td>Like <code link>format</code>, except that it also accepts a callable used to customise the formatting for each item.</td>
         </tr>
 
         <tr>
@@ -1015,8 +1545,14 @@ table.summary tr.tag-unstable {
 
         <tr>
             <td>IT</td>
-            <td>multipeek</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.multipeek.html">multipeek</td>
             <td>Allows you to preview (peek at) an unbounded number of future items in the sequence without removing them.</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.multizip.html">multizip</td>
+            <td>Generalises <code link>zip</code> for up to 8 iterators.</td>
         </tr>
 
         <tr>
@@ -1025,15 +1561,39 @@ table.summary tr.tag-unstable {
             <td>Allows you to preview (peek at) the next item in the sequence without removing it.</td>
         </tr>
 
-        <tr data-tags="unstable">
+        <tr>
             <td>Std</td>
-            <td>reverse_in_place</td>
-            <td>Consumes an <code>Iterator&lt;Item=&amp;mut T></code> (typically derived from some container), and reverses the order of the elements being pointed to.</td>
+            <td>peeking_take_while</td>
+            <td>Like <code link>take_while_ref</code>, but works on peekable iterators rather than cloneable ones.</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.put_back.html">put_back</td>
+            <td>Creates an iterator where you can "put back" one item.</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.put_back_n.html">put_back_n</td>
+            <td>Creates an iterator where you can "put back" an arbitrary number of items.</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.rciter.html">rciter</td>
+            <td>Wraps an iterator such that it can be iterated by multiple handles.</td>
+        </tr>
+
+        <tr>
+            <td>IT</td>
+            <td>tuple_combinations</td>
+            <td>Returns all in-order, unique combinations of length \(n\) without replacement.  Each combination is a tuple of length \(n\).</td>
         </tr>
     </tbody>
     </table>
 
-    <h2>Notes</h2>
+    <h2 id="sec-notes">Notes</h2>
 
     <dl class="qna">
         <dt>Q: Who is the audience for this?</dt>
@@ -1060,7 +1620,7 @@ table.summary tr.tag-unstable {
         'itertools': {
             'name': 'itertools',
             'display': 'IT',
-            'trait_url': "https://bluss.github.io/rust-itertools/doc/itertools/trait.Itertools.html",
+            'trait_url': "https://docs.rs/itertools/*/itertools/trait.Itertools.html",
         },
     };
 
@@ -1123,11 +1683,47 @@ table.summary tr.tag-unstable {
 
         // Set up link.
         $(this).wrapInner("<a href=\""+doc_url+"\"></a>");
+
+        // Set link target.
+        $(this).closest('tr').attr('id', name);
     });
 
-    // Kill all build nodes.
-    $(".cut-during-build").remove();
-    $(".build-only").remove();
+    // Add an extra div to flex-cells for spacing.
+    $("table.summary .flex-cell").each(function() {
+        let self = $(this)[0];
+        self.appendChild(document.createElement("div"));
+    });
+
+    // Link code tags.
+    $("code[link]").wrap(function() {
+        return "<a href='#"+$(this).text()+"'></a>";
+    });
+
+    // Set up quick links.
+    (function() {
+        let sections = $("h2[id]").map(function() {
+            return "<a href='#"+this.id+"''>" + this.innerHTML + "</a>";
+        });
+
+        let src = sections[0];
+        for (var i = 1; i < sections.length; i++) {
+            src = src + ", " + sections[i];
+        }
+
+        $("#jump-list")[0].innerHTML = src;
+    })();
+
+    function post_build() {
+        // Kill all build nodes.
+        $(".cut-during-build").remove();
+        $(".build-only").remove();
+        $("#build-status").remove();
+
+        // Clean up other cruft.
+        $("#MathJax_Message").remove();
+    }
+
+    MathJax.Hub.Register.StartupHook("End", post_build);
 
     </script><script type="text/javascript">
 
