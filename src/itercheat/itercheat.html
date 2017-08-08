@@ -938,6 +938,22 @@ table.summary .flex-cell {
 
         <tr>
             <td rowspan="2">Std</td>
+            <td rowspan="2">all_equal</td>
+            <td>\(\text{&amp;mut }\{a_0, \ldots, a_{i-1}, a_i, \underline{\ldots}\}\)</td>
+            <td rowspan="2"></td>
+	    <td>\((a_0 = a_1) \land \ldots \land (a_{i-1} = a_{i}) \text{ wh. } i \text{ is first wh. } a_{i-1} \neq a_i\)</td>
+        </tr>
+        <tr>
+            <td>\(\text{&amp;mut }\{a_0\}\)</td>
+            <td>\(\text{true}\)</td>
+        </tr>
+        <tr>
+            <td>\(\text{&amp;mut }\{\}\)</td>
+            <td>\(\text{true}\)</td>
+        </tr>
+
+        <tr>
+            <td rowspan="2">Std</td>
             <td rowspan="2">any</td>
             <td>\(\text{&amp;mut }\{a_0, \ldots, a_{i-1}, a_i, \underline{\ldots}\}\)</td>
             <td rowspan="2">\(p:T \rightarrow \text{bool}\)</td>
