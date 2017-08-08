@@ -30,8 +30,9 @@ fn main() {
     }
 
     {
-        let a = vec![String::from("a"), String::from("a")];
-        assert_eq!(a.into_iter().minmax(), MinMaxResult::OneElement(String::from("a")));
+        let s = String::from;
+        let a = vec![s("c"), s("a")];
+        assert_eq!(a.into_iter().minmax(), MinMaxResult::MinMax(s("a"), s("c")));
     }
 
     println!("Ok.");
