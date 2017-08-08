@@ -439,24 +439,6 @@ table.summary .flex-cell {
             <td>\(g : \text{&amp;}T \rightarrow G\)</td>
             <td>\(
                 \{
-                    (g_0, [a_0, \ldots, a_{i-1}]),\\~~
-                    (g_1, [a_i, \ldots, a_{j-1}]),\\~~
-                    (g_2, [a_j, \ldots, a_{k-1}]),
-                    \ldots
-                \}
-            \)</td>
-        </tr>
-
-        <tr>
-            <td>IT</td>
-            <td>group_by_lazy</td>
-            <td>\(\{\underbrace{a_0, \ldots, a_{i-1}}_{g(a_x) = g_0},
-                \underbrace{a_i, \ldots, a_{j-1}}_{g(a_y) = g_1 \ne g_0},
-                \underbrace{a_j, \ldots, a_{k-1}}_{g(a_z) = g_2 \ne g_1},
-                \ldots\}\),</td>
-            <td>\(g : \text{&amp;}T \rightarrow G\)</td>
-            <td>\(
-                \{
                     (g_0, \{a_0, \ldots, a_{i-1}\}),\\~~
                     (g_1, \{a_i, \ldots, a_{j-1}\}),\\~~
                     (g_2, \{a_j, \ldots, a_{k-1}\}),
@@ -585,31 +567,6 @@ table.summary .flex-cell {
                 a_0.\text{map}(f),
                 \ldots
             \} : \{\text{Ok}(U) ~|~ \text{Err}(E)\}\)</td>
-        </tr>
-
-        <tr>
-            <td>IT</td>
-            <td>mend_slices</td>
-            <td colspan="2">
-                \(
-                    \{
-                        \text{&amp;}[x_0, \ldots, x_{i-1}], \text{&amp;}[x_i, \ldots, x_{n-1}],\\~~
-                        \text{&amp;}[y_0, \ldots, y_{m-1}],\\~~
-                        \text{&amp;}[z_0, \ldots, z_{l-1}],
-                        \ldots
-                    \}
-                \)
-            </td>
-            <td>
-                \(
-                    \{
-                        \text{&amp;}[x_0, \ldots, x_{i-1}, x_i, \ldots, x_{n-1}],\\~~
-                        \text{&amp;}[y_0, \ldots, y_{m-1}],\\~~
-                        \text{&amp;}[z_0, \ldots, z_{l-1}],
-                        \ldots
-                    \}
-                \)
-            </td>
         </tr>
 
         <tr>
@@ -1529,18 +1486,6 @@ table.summary .flex-cell {
             <td>Std</td>
             <td>inspect</td>
             <td>Calls a closure for each element in a sequence, without modifying the sequence in any way.</td>
-        </tr>
-
-        <tr>
-            <td>IT</td>
-            <td>into_rc</td>
-            <td>Moves the sequence into a <code>Rc&lt;RefCell&lt;_>></code>, allowing access to the iterator to be shared.</td>
-        </tr>
-
-        <tr>
-            <td>IT</td>
-            <td>is_empty_hint</td>
-            <td>Indicates whether or not the sequence is empty, and how sure of this it is.  The answer is based on the result of <code>Iterator::size_hint</code>.  Assuming that <code>size_hint</code> is accurate, \(\text{is_empty_hint}\) will return \(\text{Some}(\text{true}|\text{false})\) if it can determine that the sequence is empty or not-empty, \(\text{None}\) otherwise.</td>
         </tr>
 
         <tr>
