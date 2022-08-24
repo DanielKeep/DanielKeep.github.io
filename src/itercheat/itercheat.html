@@ -157,6 +157,21 @@ table.summary .flex-cell {
         </tr>
 
         <tr>
+            <td>Std</td>
+            <td data-doc-link="https://doc.rust-lang.org/std/iter/fn.successors.html">successors</td>
+            <td>\(x : \text{Some}(T) ~|~ \text{None}\)</td>
+            <td>\(f : \text{&amp;}T \rightarrow \text{Some}(T) ~|~ \text{None}\)</td>
+            <td>\(
+                \{c_0, \ldots, c_{l-1}\} \text{ wh.} \\~~
+                    \text{Some}(c_0) = x, \\~~
+                    \text{Some}(c_1) = f(\text{&amp;}c_0), \\~~
+                    \ldots, \\~~
+                    \text{Some}(c_{l-1}) = f(\text{&amp;}c_{l-2}), \\~~
+                    \text{None} = f(\text{&amp;}c_{l-1})
+            \)</td>
+        </tr>
+
+        <tr>
             <td>IT</td>
             <td data-doc-link="https://docs.rs/itertools/*/itertools/fn.iterate.html">iterate</td>
             <td>\(x : T\)</td>
